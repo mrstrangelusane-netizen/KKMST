@@ -1,0 +1,2874 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaung Kaung Mobile Service Tracker</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Professional mobile service tracking application with analytics and backup features">
+    <meta name="theme-color" content="#10b981">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="KK Service Tracker">
+    <meta name="msapplication-TileColor" content="#10b981">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiByeD0iMjIiIGZpbGw9IiMxMGJ5ODEiLz4KPHN2ZyB4PSI0MiIgeT0iNDIiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMiAxNWwtNS01IDUuNzktNS43OSAxLjQxIDEuNDFMMTAuODMgMTJIMjB2MkgxMHoiLz4KPC9zdmc+Cjwvc3ZnPgo=">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzEwYjk4MSIvPgo8c3ZnIHg9IjgiIHk9IjgiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMiAxNWwtNS01IDUuNzktNS43OSAxLjQxIDEuNDFMMTAuODMgMTJIMjB2MkgxMHoiLz4KPC9zdmc+Cjwvc3ZnPgo=">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom Modules -->
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/errorHandler.js"></script>
+    <script type="module" src="js/cache.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap');
+        body {
+            font-family: 'Padauk', sans-serif;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: invert(1);
+        }
+        .excel-button {
+            background-color: #21a366;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+            text-align: center;
+        }
+        .excel-button:hover {
+            background-color: #1c8c56;
+        }
+        .google-sign-in-button {
+            background-color: #4285F4;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .google-sign-in-button:hover {
+            background-color: #357ae8;
+        }
+        .google-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+        
+        /* Theme Variables */
+        :root {
+            --bg-primary: #1f2937;
+            --bg-secondary: #374151;
+            --bg-tertiary: #4b5563;
+            --text-primary: #ffffff;
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
+            --accent-primary: #10b981;
+            --accent-secondary: #059669;
+            --border-color: #6b7280;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --accent-primary: #0d9488;
+            --accent-secondary: #0f766e;
+            --border-color: #cbd5e1;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        
+        .theme-bg-primary { background-color: var(--bg-primary); }
+        .theme-bg-secondary { background-color: var(--bg-secondary); }
+        .theme-bg-tertiary { background-color: var(--bg-tertiary); }
+        .theme-text-primary { color: var(--text-primary); }
+        .theme-text-secondary { color: var(--text-secondary); }
+        .theme-text-muted { color: var(--text-muted); }
+        .theme-border { border-color: var(--border-color); }
+        .theme-shadow { box-shadow: var(--shadow); }
+        
+        /* Office-like styling */
+        .office-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .office-card:hover {
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .office-button {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .office-button:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-1px);
+        }
+        
+        .office-input {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            color: var(--text-primary);
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .office-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .hidden-section {
+            display: none;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+        
+        .connection-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .connection-indicator.online {
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            border: 2px solid #10b981;
+        }
+        
+        .connection-indicator.offline {
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: 2px solid #ef4444;
+        }
+        
+        .connection-indicator.syncing {
+            background: rgba(59, 130, 246, 0.9);
+            color: white;
+            border: 2px solid #3b82f6;
+        }
+        
+        .connection-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .connection-indicator.online .connection-icon {
+            background: #22c55e;
+        }
+        
+        .connection-indicator.offline .connection-icon {
+            background: #ef4444;
+        }
+        
+        .connection-indicator.syncing .connection-icon {
+            background: #3b82f6;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="theme-bg-primary theme-text-primary min-h-screen flex items-center justify-center p-4">
+    <!-- Connection Status Indicator -->
+    <div id="connectionIndicator" class="connection-indicator online">
+        <div class="connection-icon"></div>
+        <span id="connectionText">Online</span>
+    </div>
+    
+    <!-- Theme Toggle Button -->
+    <button id="themeToggle" class="theme-toggle">
+        <span id="themeIcon">🌙</span>
+    </button>
+    
+    <div class="theme-bg-secondary p-8 rounded-xl theme-shadow w-full max-w-6xl space-y-8">
+        <h1 class="text-4xl font-bold text-center text-teal-400">Kaung Kaung Mobile Service Tracker</h1>
+
+        <!-- Dashboard Analytics Section -->
+        <div class="office-card p-6 space-y-4">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-semibold theme-text-primary">Dashboard Analytics</h2>
+                <button id="toggleAnalyticsBtn" class="office-button">
+                    📊 Analytics ကြည့်ရန်
+                </button>
+            </div>
+            
+            <div id="analyticsSection" class="hidden-section space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="office-card p-4">
+                        <h3 class="text-lg font-semibold theme-text-primary mb-4">Daily Trends (Last 30 Days)</h3>
+                        <div class="chart-container">
+                            <canvas id="dailyChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="office-card p-4">
+                        <h3 class="text-lg font-semibold theme-text-primary mb-4">Monthly Trends (Last 12 Months)</h3>
+                        <div class="chart-container">
+                            <canvas id="monthlyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="office-card p-4">
+                        <h3 class="text-lg font-semibold theme-text-primary mb-4">Technician Performance</h3>
+                        <div class="chart-container">
+                            <canvas id="technicianChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="office-card p-4">
+                        <h3 class="text-lg font-semibold theme-text-primary mb-4">Service Types</h3>
+                        <div class="chart-container">
+                            <canvas id="serviceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="office-card p-4">
+                        <h3 class="text-lg font-semibold theme-text-primary mb-4">Revenue Summary</h3>
+                        <div id="revenueSummary" class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="theme-text-secondary">Today:</span>
+                                <span class="theme-text-primary font-semibold" id="todayRevenue">0 ¥</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="theme-text-secondary">This Week:</span>
+                                <span class="theme-text-primary font-semibold" id="weekRevenue">0 ¥</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="theme-text-secondary">This Month:</span>
+                                <span class="theme-text-primary font-semibold" id="monthRevenue">0 ¥</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="theme-text-secondary">Total:</span>
+                                <span class="theme-text-primary font-semibold" id="totalRevenue">0 ¥</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Information and Status -->
+        <div class="office-card p-4 flex flex-col md:flex-row items-center justify-between">
+            <div class="text-sm theme-text-muted">
+                <p>အသုံးပြုသူ ID: <span id="userIdDisplay" class="font-mono text-teal-400">Loading...</span></p>
+                <p>Firebase Status: <span id="authStatus" class="font-semibold text-red-500">Connecting...</span></p>
+            </div>
+            <div id="messageBox" class="text-center md:text-right mt-2 md:mt-0"></div>
+        </div>
+        
+        <!-- Login/Logout Section -->
+        <div id="authControls" class="flex justify-center flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-center">
+            <!-- Google Sign-in Button -->
+            <button id="googleSignInBtn" class="google-sign-in-button">
+                <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.75 1.22 9.24 3.23l6.53-6.53C36.68 4.79 30.68 2 24 2 15.15 2 7.77 7.07 4.29 14.28l6.6 5.14C12.87 13.62 18.06 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.72 24.5c0-.98-.08-1.92-.25-2.85H24v5.33h12.16c-.72 2.76-2.31 5.09-4.57 6.64l6.53 5.06c3.83-3.53 6.04-8.72 6.04-14.21z"/>
+                    <path fill="#FBBC05" d="M12.91 32.12c-1.39-4.22.84-8.83 5.06-10.22l-6.53-5.06c-4.49 5.86-6.19 13.88-4.25 21.05h6.72l-1.05-6.32z"/>
+                    <path fill="#34A853" d="M24 46c5.84 0 10.74-1.95 14.33-5.32l-6.53-5.06c-2.3 2.1-5.26 3.4-7.8 3.4-5.63 0-10.36-3.8-12.02-8.98L4.29 33.72C7.77 40.93 15.15 46 24 46z"/>
+                    <path fill="none" d="M0 0h48v48H0z"/>
+                </svg>
+                Google Account ဖြင့် ဝင်ရောက်ရန်
+            </button>
+            <div id="userProfileDisplay" class="hidden flex-col items-center text-center">
+                <p class="text-lg font-bold text-teal-300" id="userName">User Name</p>
+                <p class="text-sm text-gray-400" id="userEmail">user@example.com</p>
+            </div>
+            <button id="logoutBtn" class="hidden w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 ease-in-out">
+                Logout
+            </button>
+        </div>
+        
+        <!-- Technician Selection Section -->
+        <div class="office-card p-6 space-y-4">
+            <h2 class="text-2xl font-semibold text-center theme-text-primary">Technician ရွေးချယ်ရန်</h2>
+            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <select id="technicianSelect" class="office-input p-3">
+                    <option value="" disabled selected>Technician ရွေးချယ်ရန်</option>
+                </select>
+                <div class="flex items-center space-x-2 text-xl font-semibold theme-text-secondary">
+                    <span class="text-teal-400">Technician Name:</span>
+                    <span id="currentTechnicianDisplay" class="theme-text-primary"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Tracker Section -->
+        <div class="office-card p-6 space-y-4">
+            <h2 class="text-2xl font-semibold text-center theme-text-primary">နေ့စဉ်မှတ်တမ်း</h2>
+            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <label for="datePicker" class="theme-text-secondary">ရက်စွဲရွေးချယ်ရန်:</label>
+                <input type="date" id="datePicker" class="office-input p-2 cursor-pointer">
+            </div>
+
+            <!-- Add Voucher Form -->
+            <form id="addVoucherForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <input type="text" id="customerName" placeholder="Customer Name" class="office-input p-3" data-customer-autocomplete="true">
+                    <input type="text" id="phoneModel" placeholder="Phone Model" class="office-input p-3">
+                    <input type="text" id="phoneColor" placeholder="Phone Color" class="office-input p-3">
+                    <input type="text" id="error" placeholder="Error (ဥပမာ- display ပြောင်း)" class="office-input p-3">
+                    <input type="number" id="amount" placeholder="ပမာဏ (¥)" class="office-input p-3">
+                    <input type="text" id="voucherNumber" placeholder="Voucher Number" class="office-input p-3">
+                </div>
+                <button type="submit" class="w-full office-button py-3 px-6">
+                    voucher ထည့်သွင်းရန်
+                </button>
+            </form>
+
+            <!-- Vouchers Table -->
+            <div class="flex items-center justify-end mb-2">
+                <input id="voucherSearchInput" type="text" placeholder="Voucher Number ဖြင့် ရှာရန် (Enter နှိပ်ပါ)" class="office-input p-2 w-full sm:w-1/2 md:w-1/3">
+            </div>
+            <div class="overflow-x-auto rounded-lg theme-border border">
+                <table class="w-full text-left table-auto">
+                    <thead>
+                        <tr class="theme-bg-tertiary theme-text-secondary uppercase text-sm leading-normal">
+                            <th class="py-3 px-6 text-left">အမှတ်</th>
+                            <th class="py-3 px-6 text-left">Customer Name</th>
+                            <th class="py-3 px-6 text-left">Phone Model</th>
+                            <th class="py-3 px-6 text-left">Phone Color</th>
+                            <th class="py-3 px-6 text-left">Error</th>
+                            <th class="py-3 px-6 text-left">Voucher Number</th>
+                            <th class="py-3 px-6 text-left">ပမာဏ (¥)</th>
+                            <th class="py-3 px-6 text-left" id="actionHeader">လုပ်ဆောင်ချက်</th>
+                        </tr>
+                    </thead>
+                    <tbody id="voucherTableBody" class="theme-text-primary text-sm font-light">
+                        <!-- Vouchers will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex justify-between items-center mt-4">
+                <button id="toggleDailyTotalBtn" class="office-button">
+                    💰 နေ့စဉ် စုစုပေါင်း ကြည့်ရန်
+                </button>
+                <div id="dailyTotalSection" class="hidden-section">
+                    <div class="text-xl font-bold theme-text-primary">
+                        နေ့စဉ် စုစုပေါင်း: <span id="dailyTotal" class="text-green-400">0 ¥</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technician Monthly Totals Section -->
+        <div class="office-card p-6 space-y-4">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-semibold theme-text-primary">Technician အလိုက် လက်ရှိလ စုစုပေါင်း</h2>
+                <button id="toggleMonthlyTotalsBtn" class="office-button">
+                    📊 စုစုပေါင်း ကြည့်ရန်
+                </button>
+            </div>
+            
+            <div id="monthlyTotalsSection" class="hidden-section">
+                <div id="monthlyTechnicianTotalsDisplay" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <!-- Technician monthly totals will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Technician Management Section -->
+        <div class="office-card p-6 space-y-4">
+            <h2 class="text-2xl font-semibold text-center theme-text-primary">Technician စီမံခန့်ခွဲမှု</h2>
+            <button id="toggleManagementBtn" class="w-full office-button py-3 px-6">
+                စီမံခန့်ခွဲရန်
+            </button>
+            
+            <div id="technicianManagementControls" class="hidden space-y-4 mt-4">
+                <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <input type="text" id="newTechnicianName" placeholder="Technician နာမည်အသစ်" class="office-input p-3 w-full sm:w-1/2 lg:w-1/3">
+                    <button id="addTechnicianBtn" class="w-full sm:w-auto office-button py-3 px-6">
+                        ထည့်သွင်းရန်
+                    </button>
+                </div>
+                <div id="technicianList" class="space-y-2 max-h-48 overflow-y-auto">
+                    <!-- Technicians will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Payroll System Section -->
+        <div class="office-card p-6 space-y-4">
+            <h2 class="text-2xl font-semibold text-center theme-text-primary">💰 လစာစနစ်</h2>
+            <button id="togglePayrollBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg transition-colors">
+                လစာစနစ် ဖွင့်ရန်
+            </button>
+            
+            <div id="payrollControls" class="hidden space-y-6 mt-4">
+                <!-- Step 1: Technician Selection -->
+                <div class="bg-gray-800 p-4 rounded-lg space-y-4">
+                    <h3 class="text-lg font-semibold theme-text-primary">Technician ရွေးချယ်ရန်</h3>
+                    <div class="space-y-2">
+                        <label for="payrollTechnicianSelect" class="theme-text-secondary">Technician ရွေးချယ်ပါ:</label>
+                        <select id="payrollTechnicianSelect" class="office-input p-3 w-full">
+                            <option value="" disabled selected>Technician ရွေးချယ်ရန်</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Date Range Selection -->
+                <div class="bg-gray-800 p-4 rounded-lg space-y-4">
+                    <h3 class="text-lg font-semibold theme-text-primary">ရက်စွဲ ရွေးချယ်ရန်</h3>
+                    
+                    <!-- Date Range Options -->
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" id="currentMonthOption" name="dateRangeOption" value="currentMonth" checked class="text-purple-600">
+                            <span class="theme-text-secondary">လက်ရှိ လ</span>
+                        </label>
+                        
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" id="customRangeOption" name="dateRangeOption" value="customRange" class="text-purple-600">
+                            <span class="theme-text-secondary">ရက်အပိုင်းအခြားအလိုက်</span>
+                        </label>
+                        
+                        <div id="customDateRangeInputs" class="ml-6 space-y-3 hidden">
+                            <div class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                                <div class="flex flex-col">
+                                    <label for="payrollStartDate" class="theme-text-secondary">စတင်ရက်:</label>
+                                    <input type="date" id="payrollStartDate" class="office-input p-2">
+                                </div>
+                                <div class="flex flex-col">
+                                    <label for="payrollEndDate" class="theme-text-secondary">ပြီးဆုံးရက်:</label>
+                                    <input type="date" id="payrollEndDate" class="office-input p-2">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Payroll Method Selection -->
+                <div class="bg-gray-800 p-4 rounded-lg space-y-4">
+                    <h3 class="text-lg font-semibold theme-text-primary">လစာ နည်းလမ်း ရွေးချယ်ရန်</h3>
+                    
+                    <!-- Voucher Count Method -->
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" id="voucherMethod" name="payrollMethod" value="voucher" checked class="text-purple-600">
+                            <span class="theme-text-secondary">Voucher အရေအတွက် နည်းလမ်း</span>
+                        </label>
+                        <div class="ml-6 space-y-2">
+                            <label for="voucherRate" class="theme-text-secondary">Voucher တစ်ခုလျှင် နှုန်း (ယွမ်):</label>
+                            <input type="number" id="voucherRate" value="6" min="0" step="0.01" class="office-input p-2 w-32">
+                        </div>
+                    </div>
+                    
+                    <!-- Monthly Percentage Method -->
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" id="percentageMethod" name="payrollMethod" value="percentage" class="text-purple-600">
+                            <span class="theme-text-secondary">လစဉ် ရာခိုင်နှုန်း နည်းလမ်း</span>
+                        </label>
+                        <div class="ml-6 space-y-2">
+                            <label for="percentageRate" class="theme-text-secondary">ရာခိုင်နှုန်း (%):</label>
+                            <input type="number" id="percentageRate" value="10" min="0" max="100" step="0.1" class="office-input p-2 w-32">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Calculate Button -->
+                <div class="bg-gray-800 p-4 rounded-lg space-y-4">
+                    <h3 class="text-lg font-semibold theme-text-primary">လစာ တွက်ချက်ရန်</h3>
+                    <button id="calculateIndividualPayrollBtn" class="w-full office-button py-3 px-6" disabled>
+                        လစာ တွက်ချက်ရန်
+                    </button>
+                </div>
+                
+                <!-- Payroll Result Display -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold theme-text-primary">လစာ ရလဒ်</h3>
+                    <div id="individualPayrollResult" class="space-y-3">
+                        <p class="text-center text-gray-400">Technician၊ ရက်စွဲအပိုင်းအခြားအလိုက် နည်းလမ်းကို ရွေးချယ်ပြီး လစာ တွက်ချက်ရန်</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Date Range Technician Totals Section -->
+        <div class="office-card p-6 space-y-4">
+            <h2 class="text-2xl font-semibold text-center theme-text-primary">ရက်အပိုင်းအခြားအလိုက် စုစုပေါင်း</h2>
+            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <div class="flex flex-col items-center">
+                    <label for="startDatePicker" class="theme-text-secondary">စတင်ရက်စွဲ:</label>
+                    <input type="date" id="startDatePicker" class="office-input p-2 cursor-pointer">
+                </div>
+                <div class="flex flex-col items-center">
+                    <label for="endDatePicker" class="theme-text-secondary">ပြီးဆုံးရက်စွဲ:</label>
+                    <input type="date" id="endDatePicker" class="office-input p-2 cursor-pointer">
+                </div>
+                <!-- Technician Dropdown for Date Range -->
+                <div class="flex flex-col items-center">
+                    <label for="rangeTechnicianSelect" class="theme-text-secondary">Technician ရွေးချယ်ရန်:</label>
+                    <select id="rangeTechnicianSelect" class="office-input p-2">
+                        <option value="all" selected>Technician အားလုံး</option>
+                    </select>
+                </div>
+            </div>
+            <button id="calculateRangeBtn" class="w-full office-button py-3 px-6">
+                စုစုပေါင်း တွက်ချက်ရန်
+            </button>
+            <div id="rangeTotalsDisplay" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Range totals for technicians will be displayed here -->
+            </div>
+            <button id="exportRangeBtn" class="w-full excel-button mt-4">
+                Excel Export ထုတ်ရန်
+            </button>
+            <button id="exportByTechnicianBtn" class="w-full excel-button mt-4">
+                Technician အလိုက် Excel (XLSX) Export
+            </button>
+        </div>
+
+        <!-- Backup/Restore Section -->
+        <div class="office-card p-6 space-y-4">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-semibold theme-text-primary">Data Backup & Restore</h2>
+                <button id="toggleBackupBtn" class="office-button">
+                    💾 Backup/Restore
+                </button>
+            </div>
+            
+            <div id="backupSection" class="hidden-section space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Backup Section -->
+                    <div class="office-card p-4">
+                        <h3 class="text-lg font-semibold theme-text-primary mb-4">Backup Data</h3>
+                        <p class="theme-text-secondary mb-4">Create a backup of all your data including vouchers, technicians, and settings.</p>
+                        <div class="space-y-3">
+                            <button id="backupAllBtn" class="office-button w-full">
+                                📦 Full Backup (JSON)
+                            </button>
+                            <button id="backupVouchersBtn" class="office-button w-full">
+                                📋 Vouchers Only
+                            </button>
+                            <button id="backupTechniciansBtn" class="office-button w-full">
+                                👥 Technicians Only
+                            </button>
+                        </div>
+                        <div id="backupStatus" class="mt-4 p-3 rounded-lg theme-bg-tertiary hidden">
+                            <p class="theme-text-primary text-sm"></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Restore Section -->
+                    <div class="office-card p-4">
+                        <h3 class="text-lg font-semibold theme-text-primary mb-4">Restore Data</h3>
+                        <p class="theme-text-secondary mb-4">Restore data from a previously created backup file.</p>
+                        <div class="space-y-3">
+                            <input type="file" id="restoreFileInput" accept=".json" class="office-input w-full">
+                            <button id="restoreBtn" class="office-button w-full" disabled>
+                                🔄 Restore Data
+                            </button>
+                            <button id="previewRestoreBtn" class="office-button w-full" disabled>
+                                👁️ Preview Data
+                            </button>
+                        </div>
+                        <div id="restoreStatus" class="mt-4 p-3 rounded-lg theme-bg-tertiary hidden">
+                            <p class="theme-text-primary text-sm"></p>
+                        </div>
+                        <div id="restorePreview" class="mt-4 p-3 rounded-lg theme-bg-tertiary hidden">
+                            <h4 class="theme-text-primary font-semibold mb-2">Preview:</h4>
+                            <div id="previewContent" class="theme-text-secondary text-sm"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Backup History -->
+                <div class="office-card p-4">
+                    <h3 class="text-lg font-semibold theme-text-primary mb-4">Backup History</h3>
+                    <div id="backupHistory" class="space-y-2">
+                        <p class="theme-text-muted text-center">No backups created yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+      getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+      getFirestore, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, 
+      collection, query, where, getDocs, getDoc, setLogLevel
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    setLogLevel('debug');
+
+    // ✅ Your Firebase config (fully inserted)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDCw7cZcRQi_H4yOIJabIqHwMADE_M_4Co",
+      authDomain: "kkss-c9290.firebaseapp.com",
+      projectId: "kkss-c9290",
+      storageBucket: "kkss-c9290.firebasestorage.app",
+      messagingSenderId: "319730706655",
+      appId: "1:319730706655:web:fe21f5201eecefd8f0e16a",
+      measurementId: "G-28NJFT2NK0"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // App ID (for your Firestore structure)
+    const appId = "kkss-app";
+
+        // UI elements
+        const userIdDisplay = document.getElementById('userIdDisplay');
+        const authStatus = document.getElementById('authStatus');
+        const messageBox = document.getElementById('messageBox');
+        const datePicker = document.getElementById('datePicker');
+        const addVoucherForm = document.getElementById('addVoucherForm');
+        const technicianSelect = document.getElementById('technicianSelect');
+        const currentTechnicianDisplay = document.getElementById('currentTechnicianDisplay');
+        const customerNameInput = document.getElementById('customerName');
+        const phoneModelInput = document.getElementById('phoneModel');
+        const phoneColorInput = document.getElementById('phoneColor');
+        const errorInput = document.getElementById('error');
+        const voucherNumberInput = document.getElementById('voucherNumber');
+        const amountInput = document.getElementById('amount');
+        const voucherTableBody = document.getElementById('voucherTableBody');
+        const dailyTotalDisplay = document.getElementById('dailyTotal');
+        const startDatePicker = document.getElementById('startDatePicker');
+        const endDatePicker = document.getElementById('endDatePicker');
+        const rangeTechnicianSelect = document.getElementById('rangeTechnicianSelect');
+        const calculateRangeBtn = document.getElementById('calculateRangeBtn');
+        const rangeTotalsDisplay = document.getElementById('rangeTotalsDisplay');
+        const exportRangeBtn = document.getElementById('exportRangeBtn');
+        const exportByTechnicianBtn = document.getElementById('exportByTechnicianBtn');
+        const toggleManagementBtn = document.getElementById('toggleManagementBtn');
+        const technicianManagementControls = document.getElementById('technicianManagementControls');
+        const newTechnicianNameInput = document.getElementById('newTechnicianName');
+        const addTechnicianBtn = document.getElementById('addTechnicianBtn');
+        const technicianListContainer = document.getElementById('technicianList');
+        const monthlyTechnicianTotalsDisplay = document.getElementById('monthlyTechnicianTotalsDisplay');
+        const googleSignInBtn = document.getElementById('googleSignInBtn');
+        const userProfileDisplay = document.getElementById('userProfileDisplay');
+        const userNameDisplay = document.getElementById('userName');
+        const userEmailDisplay = document.getElementById('userEmail');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const voucherSearchInput = document.getElementById('voucherSearchInput');
+        
+        // New elements for analytics and backup
+        const toggleAnalyticsBtn = document.getElementById('toggleAnalyticsBtn');
+        const analyticsSection = document.getElementById('analyticsSection');
+        const toggleBackupBtn = document.getElementById('toggleBackupBtn');
+        const backupSection = document.getElementById('backupSection');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        // Analytics elements
+        const dailyChart = document.getElementById('dailyChart');
+        const monthlyChart = document.getElementById('monthlyChart');
+        const technicianChart = document.getElementById('technicianChart');
+        const serviceChart = document.getElementById('serviceChart');
+        const todayRevenue = document.getElementById('todayRevenue');
+        const weekRevenue = document.getElementById('weekRevenue');
+        const monthRevenue = document.getElementById('monthRevenue');
+        const totalRevenue = document.getElementById('totalRevenue');
+        
+        // Backup elements
+        const backupAllBtn = document.getElementById('backupAllBtn');
+        const backupVouchersBtn = document.getElementById('backupVouchersBtn');
+        const backupTechniciansBtn = document.getElementById('backupTechniciansBtn');
+        const restoreFileInput = document.getElementById('restoreFileInput');
+        const restoreBtn = document.getElementById('restoreBtn');
+        const previewRestoreBtn = document.getElementById('previewRestoreBtn');
+        const backupStatus = document.getElementById('backupStatus');
+        const restoreStatus = document.getElementById('restoreStatus');
+        const restorePreview = document.getElementById('restorePreview');
+        const previewContent = document.getElementById('previewContent');
+        const backupHistory = document.getElementById('backupHistory');
+        
+        // Connection indicator elements
+        const connectionIndicator = document.getElementById('connectionIndicator');
+        const connectionText = document.getElementById('connectionText');
+        
+        // Monthly totals toggle elements
+        const toggleMonthlyTotalsBtn = document.getElementById('toggleMonthlyTotalsBtn');
+        const monthlyTotalsSection = document.getElementById('monthlyTotalsSection');
+        
+        // Daily total toggle elements
+        const toggleDailyTotalBtn = document.getElementById('toggleDailyTotalBtn');
+        const dailyTotalSection = document.getElementById('dailyTotalSection');
+        
+        
+        // Payroll system elements
+        const togglePayrollBtn = document.getElementById('togglePayrollBtn');
+        const payrollControls = document.getElementById('payrollControls');
+        const payrollTechnicianSelect = document.getElementById('payrollTechnicianSelect');
+        const currentMonthOption = document.getElementById('currentMonthOption');
+        const customRangeOption = document.getElementById('customRangeOption');
+        const customDateRangeInputs = document.getElementById('customDateRangeInputs');
+        const payrollStartDate = document.getElementById('payrollStartDate');
+        const payrollEndDate = document.getElementById('payrollEndDate');
+        const voucherMethod = document.getElementById('voucherMethod');
+        const percentageMethod = document.getElementById('percentageMethod');
+        const voucherRate = document.getElementById('voucherRate');
+        const percentageRate = document.getElementById('percentageRate');
+        const calculateIndividualPayrollBtn = document.getElementById('calculateIndividualPayrollBtn');
+        const individualPayrollResult = document.getElementById('individualPayrollResult');
+
+        let currentUserId = null;
+        let charts = {};
+        let backupData = null;
+        let unsubscribeVouchers = null;
+        let unsubscribeTechnicians = null;
+        let unsubscribeMonthlyTotals = null;
+        let dailyVouchersRaw = [];
+        let voucherSearchQuery = '';
+        let searchResults = [];
+        let isSearchMode = false;
+        
+        // Payroll system variables
+        let payrollSettings = {
+            method: 'voucher', // 'voucher' or 'percentage'
+            voucherRate: 6,
+            percentageRate: 10
+        };
+        let payrollData = {};
+        
+        // Offline data management
+        let offlineQueue = [];
+        let isOnline = true;
+        let syncInProgress = false;
+
+        // Function to show messages
+        function showMessage(message, isError = false) {
+            messageBox.textContent = message;
+            messageBox.className = `text-sm font-semibold mt-2 md:mt-0 ${isError ? 'text-red-400' : 'text-green-400'}`;
+        }
+        
+        // CSV field escaping helper for safe Excel exports
+        function safeCSV(value) {
+            const str = (value === undefined || value === null) ? '' : String(value);
+            const escaped = str.replace(/\"/g, '""');
+            return `"${escaped}"`;
+        }
+
+        // Authentication and Firestore setup
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                userIdDisplay.textContent = currentUserId;
+                authStatus.textContent = 'Authenticated';
+                authStatus.className = 'font-semibold text-green-500';
+
+                // Display user profile info and logout button
+                googleSignInBtn.classList.add('hidden');
+                userProfileDisplay.classList.remove('hidden');
+                logoutBtn.classList.remove('hidden');
+                
+                userNameDisplay.textContent = user.displayName || 'Guest';
+                userEmailDisplay.textContent = user.email || '';
+
+                listenForVouchers(datePicker.value);
+                listenForTechnicians();
+                listenForMonthlyTotals();
+            } else {
+                currentUserId = null;
+                userIdDisplay.textContent = 'Not signed in';
+                authStatus.textContent = 'Not Authenticated';
+                authStatus.className = 'font-semibold text-red-500';
+
+                // Hide user profile info and show sign-in button
+                googleSignInBtn.classList.remove('hidden');
+                userProfileDisplay.classList.add('hidden');
+                logoutBtn.classList.add('hidden');
+                
+                userNameDisplay.textContent = '';
+                userEmailDisplay.textContent = '';
+
+                // Clean up listeners when user logs out
+                if (unsubscribeVouchers) {
+                    unsubscribeVouchers();
+                }
+                if (unsubscribeTechnicians) {
+                    unsubscribeTechnicians();
+                }
+                if (unsubscribeMonthlyTotals) {
+                    unsubscribeMonthlyTotals();
+                }
+            }
+        });
+
+        // Google Sign-in functionality
+        if (googleSignInBtn) {
+            googleSignInBtn.addEventListener('click', async () => {
+                const provider = new GoogleAuthProvider();
+                try {
+                    await signInWithPopup(auth, provider);
+                    showMessage("Google Account ဖြင့် ဝင်ရောက်ပြီးပါပြီ။");
+                } catch (error) {
+                    showMessage(`Google Sign-in failed: ${error.message}`, true);
+                    console.error("Error with Google Sign-in: ", error);
+                }
+            });
+        }
+        
+        // Logout functionality
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                    showMessage("အကောင့်မှ ထွက်ပြီးပါပြီ။");
+                } catch (error) {
+                    showMessage(`Logout failed: ${error.message}`, true);
+                    console.error("Error with Logout: ", error);
+                }
+            });
+        }
+
+
+        // Function to listen for real-time technician list changes
+        function listenForTechnicians() {
+            if (unsubscribeTechnicians) {
+                unsubscribeTechnicians();
+            }
+            if (!currentUserId) return;
+
+            const techniciansRef = doc(db, `artifacts/${appId}/users/${currentUserId}/technicianList/technicians`);
+
+            unsubscribeTechnicians = onSnapshot(techniciansRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const technicianData = docSnap.data();
+                    const technicians = technicianData.names || [];
+                    populateTechnicianDropdown(technicians, technicianSelect, false);
+                    populateTechnicianDropdown(technicians, rangeTechnicianSelect, true);
+                    displayTechnicianList(technicians);
+                    
+                    updateCurrentTechnicianDisplay();
+                } else {
+                    // Only set default technicians if this is truly a new user setup
+                    // Check if user has any existing vouchers to determine if they're new
+                    const vouchersRef = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                    getDocs(vouchersRef).then((voucherSnap) => {
+                        if (voucherSnap.empty) {
+                            // Only set defaults for truly new users with no vouchers
+                            const defaultTechnicians = ['ကိုကျော်', 'မောင်မောင်', 'မေသန္တာ', 'စိုးသူ', 'ထွန်းထွန်း', 'အေးမင်း'];
+                            setDoc(techniciansRef, { names: defaultTechnicians });
+                        }
+                    }).catch((error) => {
+                        console.error("Error checking for existing vouchers:", error);
+                        // If we can't check vouchers, don't set defaults to avoid data loss
+                    });
+                }
+            }, (error) => {
+                showMessage(`Error fetching technician list: ${error.message}`, true);
+                console.error("Error getting technician list: ", error);
+            });
+        }
+
+        // Function to update the displayed technician name
+        function updateCurrentTechnicianDisplay() {
+            const selectedOption = technicianSelect.options[technicianSelect.selectedIndex];
+            currentTechnicianDisplay.textContent = selectedOption.disabled ? '...' : selectedOption.value;
+        }
+
+        // Event listener for technician selection change
+        technicianSelect.addEventListener('change', () => {
+            updateCurrentTechnicianDisplay();
+            // Clear search mode when technician changes
+            if (isSearchMode) {
+                isSearchMode = false;
+                searchResults = [];
+                voucherSearchInput.value = '';
+                voucherSearchQuery = '';
+            }
+            renderDailyVouchers();
+        });
+
+        if (voucherSearchInput) {
+            voucherSearchInput.addEventListener('input', (e) => {
+                voucherSearchQuery = e.target.value.trim();
+                if (!voucherSearchQuery) {
+                    // Clear search mode when input is empty
+                    isSearchMode = false;
+                    searchResults = [];
+                    renderDailyVouchers();
+                }
+            });
+
+            voucherSearchInput.addEventListener('keypress', async (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    await performVoucherSearch();
+                }
+            });
+        }
+
+
+        // Function to perform voucher search across all vouchers
+        async function performVoucherSearch() {
+            if (!voucherSearchQuery || !currentUserId) {
+                return;
+            }
+
+            try {
+                showMessage("Voucher ရှာနေပါသည်...", false);
+                
+                const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                const querySnapshot = await getDocs(vouchersCollection);
+                
+                searchResults = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const voucherNumber = (data.voucherNumber || '').toString().toLowerCase();
+                    const searchQuery = voucherSearchQuery.toLowerCase();
+                    
+                    if (voucherNumber.includes(searchQuery)) {
+                        searchResults.push({ id: doc.id, ...data });
+                    }
+                });
+
+                if (searchResults.length === 0) {
+                    showMessage(`Voucher Number "${voucherSearchQuery}" ကို မတွေ့ပါ`, true);
+                    isSearchMode = false;
+                } else {
+                    isSearchMode = true;
+                    showMessage(`${searchResults.length} ခု Voucher တွေ့ပါသည်`, false);
+                    displaySearchResults();
+                }
+            } catch (error) {
+                showMessage(`Error searching vouchers: ${error.message}`, true);
+                console.error("Error searching vouchers: ", error);
+            }
+        }
+
+        // Function to display search results
+        function displaySearchResults() {
+            // Update table header for search mode
+            const actionHeader = document.getElementById('actionHeader');
+            actionHeader.textContent = 'Technician & Date';
+            
+            voucherTableBody.innerHTML = '';
+            if (searchResults.length === 0) {
+                voucherTableBody.innerHTML = '<tr><td colspan="8" class="py-3 text-center text-gray-400">ရှာဖွေမှုရလဒ် မရှိပါ</td></tr>';
+                return;
+            }
+
+            searchResults.forEach((voucher, index) => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-700 hover:bg-gray-700 transition-colors duration-150';
+                row.innerHTML = `
+                    <td class="py-3 px-6 text-left whitespace-nowrap">${index + 1}</td>
+                    <td class="py-3 px-6 text-left">${voucher.customerName}</td>
+                    <td class="py-3 px-6 text-left">${voucher.phoneModel}</td>
+                    <td class="py-3 px-6 text-left">${voucher.phoneColor}</td>
+                    <td class="py-3 px-6 text-left">${voucher.error}</td>
+                    <td class="py-3 px-6 text-left font-semibold text-teal-400">${voucher.voucherNumber}</td>
+                    <td class="py-3 px-6 text-left">${(Number(voucher.amount) || 0).toLocaleString()} ¥</td>
+                    <td class="py-3 px-6 text-left">
+                        <span class="text-sm text-gray-300 font-semibold">${voucher.technicianName || 'Unknown'}</span>
+                        <br>
+                        <span class="text-xs text-gray-400">${voucher.date || 'No Date'}</span>
+                    </td>
+                `;
+                voucherTableBody.appendChild(row);
+            });
+
+            // Update daily total to show search results total
+            const totalAmount = searchResults.reduce((sum, v) => sum + (Number(v.amount) || 0), 0);
+            dailyTotalDisplay.textContent = `Search Total: ${totalAmount.toLocaleString()} ¥`;
+        }
+
+        // Function to populate the technician dropdowns
+        function populateTechnicianDropdown(technicians, selectElement, addAllOption = false) {
+            selectElement.innerHTML = '';
+            
+            if (!addAllOption) {
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Technician ရွေးချယ်ရန်';
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+                selectElement.appendChild(defaultOption);
+            } else {
+                const allOption = document.createElement('option');
+                allOption.value = 'all';
+                allOption.textContent = 'Technician အားလုံး';
+                allOption.selected = true;
+                selectElement.appendChild(allOption);
+            }
+            
+            technicians.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                selectElement.appendChild(option);
+            });
+        }
+
+        // Function to display the technician list for management
+        function displayTechnicianList(technicians) {
+            technicianListContainer.innerHTML = '';
+            if (technicians.length === 0) {
+                technicianListContainer.innerHTML = '<p class="text-center text-gray-400">Technician နာမည်များ ထည့်သွင်းထားခြင်း မရှိသေးပါ</p>';
+                return;
+            }
+
+            technicians.forEach((name, index) => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-3 bg-gray-600 rounded-lg';
+                item.innerHTML = `
+                    <span class="text-gray-200" id="name-${index}">${name}</span>
+                    <div>
+                        <button class="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded-lg text-sm mr-2" data-index="${index}">
+                            ပြုပြင်ရန်
+                        </button>
+                        <button class="delete-btn bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-lg text-sm" data-index="${index}">
+                            ဖျက်ရန်
+                        </button>
+                    </div>
+                `;
+                technicianListContainer.appendChild(item);
+            });
+
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', handleEditTechnician);
+            });
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', handleDeleteTechnician);
+            });
+        }
+
+        toggleManagementBtn.addEventListener('click', () => {
+            technicianManagementControls.classList.toggle('hidden');
+            if (!technicianManagementControls.classList.contains('hidden')) {
+                toggleManagementBtn.textContent = 'စီမံခန့်ခွဲမှု ပိတ်ရန်';
+                toggleManagementBtn.classList.replace('bg-yellow-500', 'bg-red-500');
+            } else {
+                toggleManagementBtn.textContent = 'စီမံခန့်ခွဲရန်';
+                toggleManagementBtn.classList.replace('bg-red-500', 'bg-yellow-500');
+            }
+        });
+
+        // Payroll system event listeners
+        togglePayrollBtn.addEventListener('click', () => {
+            payrollControls.classList.toggle('hidden');
+            if (!payrollControls.classList.contains('hidden')) {
+                togglePayrollBtn.textContent = 'လစာစနစ် ပိတ်ရန်';
+                togglePayrollBtn.classList.replace('bg-purple-600', 'bg-red-600');
+                loadPayrollSettings();
+                populatePayrollTechnicianDropdown();
+            } else {
+                togglePayrollBtn.textContent = 'လစာစနစ် ဖွင့်ရန်';
+                togglePayrollBtn.classList.replace('bg-red-600', 'bg-purple-600');
+            }
+        });
+
+        // Payroll validation function
+        function validatePayrollInputs() {
+            const selectedTechnician = payrollTechnicianSelect.value;
+            const isCurrentMonth = currentMonthOption.checked;
+            const isCustomRange = customRangeOption.checked;
+            
+            let isValid = false;
+            
+            if (selectedTechnician) {
+                if (isCurrentMonth) {
+                    isValid = true;
+                } else if (isCustomRange) {
+                    const startDate = payrollStartDate.value;
+                    const endDate = payrollEndDate.value;
+                    isValid = startDate && endDate && startDate <= endDate;
+                }
+            }
+            
+            calculateIndividualPayrollBtn.disabled = !isValid;
+        }
+
+        // Enable/disable calculate button based on technician selection and date validation
+        payrollTechnicianSelect.addEventListener('change', validatePayrollInputs);
+        
+        // Date range option change handlers
+        currentMonthOption.addEventListener('change', () => {
+            customDateRangeInputs.classList.add('hidden');
+            validatePayrollInputs();
+        });
+        
+        customRangeOption.addEventListener('change', () => {
+            customDateRangeInputs.classList.remove('hidden');
+            validatePayrollInputs();
+        });
+        
+        // Date input change handlers
+        payrollStartDate.addEventListener('change', validatePayrollInputs);
+        payrollEndDate.addEventListener('change', validatePayrollInputs);
+
+        calculateIndividualPayrollBtn.addEventListener('click', async () => {
+            const selectedTechnician = payrollTechnicianSelect.value;
+            if (!selectedTechnician) {
+                showMessage("ကျေးဇူးပြု၍ Technician ရွေးချယ်ပါ", true);
+                return;
+            }
+
+            try {
+                const method = voucherMethod.checked ? 'voucher' : 'percentage';
+                const voucherRateValue = parseFloat(voucherRate.value);
+                const percentageRateValue = parseFloat(percentageRate.value);
+
+                payrollSettings = {
+                    method: method,
+                    voucherRate: voucherRateValue,
+                    percentageRate: percentageRateValue
+                };
+
+                await calculateIndividualPayroll(selectedTechnician);
+            } catch (error) {
+                showMessage(`လစာ တွက်ချက်ရာတွင် အမှား: ${error.message}`, true);
+                console.error("Error calculating payroll: ", error);
+            }
+        });
+
+        addTechnicianBtn.addEventListener('click', async () => {
+            const newName = newTechnicianNameInput.value.trim();
+            if (!newName) {
+                showMessage("ကျေးဇူးပြု၍ နာမည်အသစ် ထည့်သွင်းပါ", true);
+                return;
+            }
+
+            try {
+                const techniciansRef = doc(db, `artifacts/${appId}/users/${currentUserId}/technicianList/technicians`);
+                const docSnap = await getDoc(techniciansRef);
+                const currentNames = docSnap.exists() ? docSnap.data().names : [];
+                
+                if (currentNames.includes(newName)) {
+                    showMessage("ဤနာမည်သည် ရှိနှင့်ပြီးသား ဖြစ်သည်", true);
+                    return;
+                }
+
+                currentNames.push(newName);
+                
+                if (isOnline) {
+                    // Online: Update directly in Firebase
+                    await setDoc(techniciansRef, { names: currentNames });
+                    showMessage("Technician အသစ် ထည့်သွင်းပြီးပါပြီ။");
+                } else {
+                    // Offline: Queue for later sync
+                    queueOfflineAction({
+                        type: 'updateTechnician',
+                        data: { names: currentNames }
+                    });
+                    showMessage("Technician အသစ် ထည့်သွင်းပြီးပါပြီ။ (အော့ဖ်လိုင်းတွင် သိမ်းထားပါသည်)", false);
+                }
+                
+                newTechnicianNameInput.value = '';
+            } catch (error) {
+                showMessage(`Error adding technician: ${error.message}`, true);
+                console.error("Error adding technician: ", error);
+            }
+        });
+
+        async function handleEditTechnician(event) {
+            const index = event.target.dataset.index;
+            const nameElement = document.getElementById(`name-${index}`);
+            const currentName = nameElement.textContent;
+
+            nameElement.innerHTML = `
+                <input type="text" id="edit-input-${index}" value="${currentName}" class="bg-gray-500 p-1 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-400">
+            `;
+            event.target.textContent = 'သိမ်းရန်';
+            event.target.classList.replace('bg-yellow-500', 'bg-blue-500');
+            event.target.removeEventListener('click', handleEditTechnician);
+            event.target.addEventListener('click', handleConfirmEdit);
+        }
+
+        async function handleConfirmEdit(event) {
+            const index = event.target.dataset.index;
+            const newNameInput = document.getElementById(`edit-input-${index}`);
+            const newName = newNameInput.value.trim();
+
+            if (!newName) {
+                showMessage("နာမည်ကို ဗလာထား၍မရပါ", true);
+                return;
+            }
+
+            try {
+                const techniciansRef = doc(db, `artifacts/${appId}/users/${currentUserId}/technicianList/technicians`);
+                const docSnap = await getDoc(techniciansRef);
+                if (!docSnap.exists()) {
+                    showMessage("Technician များစာရင်း မတွေ့ပါ", true);
+                    return;
+                }
+                const currentNames = docSnap.data().names || [];
+                
+                if (currentNames.includes(newName) && currentNames.indexOf(newName) !== parseInt(index)) {
+                     showMessage("ဤနာမည်သည် ရှိနှင့်ပြီးသား ဖြစ်သည်", true);
+                     return;
+                }
+                
+                currentNames[index] = newName;
+                
+                if (isOnline) {
+                    // Online: Update directly in Firebase
+                    await setDoc(techniciansRef, { names: currentNames });
+                    showMessage("နာမည် ပြင်ဆင်ပြီးပါပြီ။");
+                } else {
+                    // Offline: Queue for later sync
+                    queueOfflineAction({
+                        type: 'updateTechnician',
+                        data: { names: currentNames }
+                    });
+                    showMessage("နာမည် ပြင်ဆင်ပြီးပါပြီ။ (အော့ဖ်လိုင်းတွင် သိမ်းထားပါသည်)", false);
+                }
+
+                event.target.textContent = 'ပြုပြင်ရန်';
+                event.target.classList.replace('bg-blue-500', 'bg-yellow-500');
+                event.target.removeEventListener('click', handleConfirmEdit);
+                event.target.addEventListener('click', handleEditTechnician);
+            } catch (error) {
+                showMessage(`Error updating technician: ${error.message}`, true);
+                console.error("Error updating technician: ", error);
+            }
+        }
+
+        async function handleDeleteTechnician(event) {
+            const index = event.target.dataset.index;
+            
+            try {
+                const techniciansRef = doc(db, `artifacts/${appId}/users/${currentUserId}/technicianList/technicians`);
+                const docSnap = await getDoc(techniciansRef);
+                if (!docSnap.exists()) {
+                    showMessage("Technician များစာရင်း မတွေ့ပါ", true);
+                    return;
+                }
+                const currentNames = docSnap.data().names || [];
+
+                const nameToDelete = currentNames[index];
+                const confirmed = window.confirm(`ယခု Technician ကို ဖျက်ရန် သေချာပါသလား?\nName: ${nameToDelete}`);
+                if (!confirmed) {
+                    return;
+                }
+
+                currentNames.splice(index, 1);
+                
+                if (isOnline) {
+                    // Online: Update directly in Firebase
+                    await setDoc(techniciansRef, { names: currentNames });
+                    showMessage("Technician ဖျက်ပြီးပါပြီ။");
+                } else {
+                    // Offline: Queue for later sync
+                    queueOfflineAction({
+                        type: 'updateTechnician',
+                        data: { names: currentNames }
+                    });
+                    showMessage("Technician ဖျက်ပြီးပါပြီ။ (အော့ဖ်လိုင်းတွင် သိမ်းထားပါသည်)", false);
+                }
+            } catch (error) {
+                showMessage(`Error deleting technician: ${error.message}`, true);
+                console.error("Error deleting technician: ", error);
+            }
+        }
+
+        // Payroll system functions
+        async function loadPayrollSettings() {
+            try {
+                if (isOnline && currentUserId) {
+                    const payrollSettingsRef = doc(db, `artifacts/${appId}/users/${currentUserId}/payrollSettings`);
+                    const docSnap = await getDoc(payrollSettingsRef);
+                    if (docSnap.exists()) {
+                        payrollSettings = docSnap.data();
+                    }
+                } else {
+                    // Load from localStorage for offline use
+                    const savedSettings = localStorage.getItem('payrollSettings');
+                    if (savedSettings) {
+                        payrollSettings = JSON.parse(savedSettings);
+                    }
+                }
+
+                // Update UI with loaded settings
+                if (payrollSettings.method === 'voucher') {
+                    voucherMethod.checked = true;
+                } else {
+                    percentageMethod.checked = true;
+                }
+                voucherRate.value = payrollSettings.voucherRate || 6;
+                percentageRate.value = payrollSettings.percentageRate || 10;
+            } catch (error) {
+                console.error("Error loading payroll settings: ", error);
+            }
+        }
+
+        function populatePayrollTechnicianDropdown() {
+            // Get technicians from the existing technician list
+            if (!currentUserId) {
+                console.error("No current user ID available");
+                return;
+            }
+            
+            const techniciansRef = doc(db, `artifacts/${appId}/users/${currentUserId}/technicianList/technicians`);
+            getDoc(techniciansRef).then((docSnap) => {
+                if (docSnap.exists()) {
+                    const technicians = docSnap.data().names || [];
+                    payrollTechnicianSelect.innerHTML = '<option value="" disabled selected>Technician ရွေးချယ်ရန်</option>';
+                    
+                    if (technicians.length === 0) {
+                        const option = document.createElement('option');
+                        option.value = "";
+                        option.textContent = "Technician မရှိပါ";
+                        option.disabled = true;
+                        payrollTechnicianSelect.appendChild(option);
+                    } else {
+                        technicians.forEach(name => {
+                            const option = document.createElement('option');
+                            option.value = name;
+                            option.textContent = name;
+                            payrollTechnicianSelect.appendChild(option);
+                        });
+                    }
+                } else {
+                    // No technicians document exists
+                    payrollTechnicianSelect.innerHTML = '<option value="" disabled selected>Technician မတွေ့ပါ</option>';
+                }
+            }).catch((error) => {
+                console.error("Error loading technicians for payroll: ", error);
+                payrollTechnicianSelect.innerHTML = '<option value="" disabled selected>Technician များ လုပ်ဆောင်ရာတွင် အမှား</option>';
+            });
+        }
+
+        async function calculateIndividualPayroll(technicianName) {
+            try {
+                if (!currentUserId) {
+                    showMessage("အသုံးပြုသူ အတည်ပြုမထားပါ", true);
+                    return;
+                }
+
+                if (!technicianName) {
+                    showMessage("ကျေးဇူးပြု၍ Technician ရွေးချယ်ပါ", true);
+                    return;
+                }
+
+                // Determine date range based on selection
+                let startDate, endDate, dateRangeText;
+                
+                if (currentMonthOption.checked) {
+                    const currentDate = new Date();
+                    const currentMonth = currentDate.getMonth() + 1;
+                    const currentYear = currentDate.getFullYear();
+                    startDate = new Date(currentYear, currentMonth - 1, 1);
+                    endDate = new Date(currentYear, currentMonth, 0);
+                    dateRangeText = `${currentMonth}/${currentYear}`;
+                } else {
+                    startDate = new Date(payrollStartDate.value);
+                    endDate = new Date(payrollEndDate.value);
+                    dateRangeText = `${payrollStartDate.value} to ${payrollEndDate.value}`;
+                }
+                
+                // Get vouchers for selected date range first, then filter by technician
+                const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                
+                const q = query(
+                    vouchersCollection,
+                    where("date", ">=", startDate.toISOString().split('T')[0]),
+                    where("date", "<=", endDate.toISOString().split('T')[0])
+                );
+
+                const querySnapshot = await getDocs(q);
+                let voucherCount = 0;
+                let totalAmount = 0;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    // Filter by technician name in the client
+                    if (data.technicianName === technicianName) {
+                        const amount = parseFloat(data.amount) || 0;
+                        voucherCount++;
+                        totalAmount += amount;
+                    }
+                });
+
+                // Calculate payroll based on selected method
+                let payroll = 0;
+                let calculationText = '';
+                
+                if (payrollSettings.method === 'voucher') {
+                    payroll = voucherCount * payrollSettings.voucherRate;
+                    calculationText = `${voucherCount} Voucher × ${payrollSettings.voucherRate} ယွမ် = ${payroll.toFixed(2)} ယွမ်`;
+                } else {
+                    payroll = totalAmount * (payrollSettings.percentageRate / 100);
+                    calculationText = `${totalAmount.toFixed(2)} ယွမ် × ${payrollSettings.percentageRate}% = ${payroll.toFixed(2)} ယွမ်`;
+                }
+
+                // Display the result
+                displayIndividualPayrollResult(technicianName, voucherCount, totalAmount, payroll, calculationText, dateRangeText);
+                
+            } catch (error) {
+                showMessage(`လစာ တွက်ချက်ရာတွင် အမှား: ${error.message}`, true);
+                console.error("Error calculating payroll: ", error);
+                // Show error in result area
+                individualPayrollResult.innerHTML = `
+                    <div class="bg-red-900 p-4 rounded-lg">
+                        <p class="text-red-200">လစာ တွက်ချက်ရာတွင် အမှား: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayIndividualPayrollResult(technicianName, voucherCount, totalAmount, payroll, calculationText, dateRangeText) {
+            const methodText = payrollSettings.method === 'voucher' ? 
+                `Voucher အရေအတွက် နည်းလမ်း` : 
+                `ရာခိုင်နှုန်း နည်းလမ်း`;
+
+            individualPayrollResult.innerHTML = `
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h4 class="text-xl font-semibold text-teal-400 mb-4">${technicianName} - ${dateRangeText} လစာ</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="space-y-4">
+                            <div class="text-center">
+                                <p class="text-sm theme-text-secondary">စုစုပေါင်း Voucher</p>
+                                <p class="text-2xl font-bold text-white">${voucherCount}</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-sm theme-text-secondary"> စုစုပေါင်း</p>
+                                <p class="text-2xl font-bold text-green-400">${totalAmount.toFixed(2)} ယွမ်</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="text-center">
+                                <p class="text-sm theme-text-secondary">တွက်ချက်နည်းလမ်း</p>
+                                <p class="text-lg font-semibold text-purple-400">${methodText}</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-sm theme-text-secondary">နောက်ဆုံး လစာ</p>
+                                <p class="text-3xl font-bold text-blue-400">${payroll.toFixed(2)} ယွမ်</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <p class="text-sm theme-text-secondary mb-2">တွက်ချက်မှု အသေးစိတ်:</p>
+                        <p class="text-lg font-semibold text-yellow-400">${calculationText}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        datePicker.value = today;
+        startDatePicker.value = today;
+        endDatePicker.value = today;
+
+        function listenForVouchers(date) {
+            if (unsubscribeVouchers) {
+                unsubscribeVouchers();
+            }
+            if (!currentUserId) return;
+
+            const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+            const q = query(vouchersCollection, where("date", "==", date));
+
+            unsubscribeVouchers = onSnapshot(q, (querySnapshot) => {
+                let vouchers = [];
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    vouchers.push({ id: doc.id, ...data });
+                });
+                
+                vouchers.sort((a, b) => (a.timestamp && b.timestamp) ? a.timestamp.toDate() - b.timestamp.toDate() : 0);
+                dailyVouchersRaw = vouchers;
+                renderDailyVouchers();
+            }, (error) => {
+                showMessage(`Error fetching daily data: ${error.message}`, true);
+                console.error("Error getting documents: ", error);
+            });
+        }
+
+        function renderDailyVouchers() {
+            // If in search mode, don't render daily vouchers
+            if (isSearchMode) {
+                return;
+            }
+
+            const selectedTechnician = technicianSelect.value;
+            let filtered = selectedTechnician ? dailyVouchersRaw.filter(v => v.technicianName === selectedTechnician) : dailyVouchersRaw;
+
+            if (voucherSearchQuery) {
+                const q = voucherSearchQuery.toLowerCase();
+                filtered = filtered.filter(v => (v.voucherNumber || '').toString().toLowerCase().includes(q));
+            }
+            const totalAmount = filtered.reduce((sum, v) => sum + (Number(v.amount) || 0), 0);
+            displayVouchers(filtered);
+            dailyTotalDisplay.textContent = `${totalAmount.toLocaleString()} ¥`;
+        }
+
+        // Function to listen for real-time monthly totals
+        function listenForMonthlyTotals() {
+            if (unsubscribeMonthlyTotals) {
+                unsubscribeMonthlyTotals();
+            }
+            if (!currentUserId) return;
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const firstDay = new Date(year, month, 1).toISOString().split('T')[0];
+            const lastDay = new Date(year, month + 1, 0).toISOString().split('T')[0];
+
+            const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+            const q = query(vouchersCollection,
+                where("date", ">=", firstDay),
+                where("date", "<=", lastDay)
+            );
+
+            unsubscribeMonthlyTotals = onSnapshot(q, (querySnapshot) => {
+                let technicianTotals = {};
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const techName = data.technicianName || 'Unknown';
+                    
+                    if (!technicianTotals[techName]) {
+                        technicianTotals[techName] = {
+                            total: 0,
+                            count: 0
+                        };
+                    }
+                    
+                    technicianTotals[techName].total += Number(data.amount) || 0;
+                    technicianTotals[techName].count += 1;
+                });
+                displayTechnicianTotals(technicianTotals, monthlyTechnicianTotalsDisplay);
+            }, (error) => {
+                showMessage(`Error fetching monthly totals: ${error.message}`, true);
+                console.error("Error getting monthly totals: ", error);
+            });
+        }
+
+        function displayTechnicianTotals(totals, displayElement) {
+            displayElement.innerHTML = '';
+            if (Object.keys(totals).length === 0) {
+                displayElement.innerHTML = '<p class="text-center text-gray-400 col-span-full">ဤလအတွက် Technician စုစုပေါင်းမှတ်တမ်းမရှိသေးပါ</p>';
+                return;
+            }
+
+            for (const [technician, data] of Object.entries(totals)) {
+                const totalItem = document.createElement('div');
+                totalItem.className = 'bg-gray-600 p-4 rounded-lg shadow-md';
+                totalItem.innerHTML = `
+                    <p class="text-lg font-semibold text-teal-300">${technician}</p>
+                    <p class="text-xl font-bold text-white mt-1">${data.total.toLocaleString()} ¥</p>
+                    <p class="text-sm text-gray-300 mt-1">Voucher Count: ${data.count}</p>
+                `;
+                displayElement.appendChild(totalItem);
+            }
+        }
+
+        function displayVouchers(vouchers) {
+            // Reset table header for normal mode
+            const actionHeader = document.getElementById('actionHeader');
+            actionHeader.textContent = 'လုပ်ဆောင်ချက်';
+            
+            voucherTableBody.innerHTML = '';
+            if (vouchers.length === 0) {
+                voucherTableBody.innerHTML = '<tr><td colspan="8" class="py-3 text-center text-gray-400">ဤနေ့အတွက် မှတ်တမ်းမရှိပါ</td></tr>';
+                return;
+            }
+
+            vouchers.forEach((voucher, index) => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-700 hover:bg-gray-700 transition-colors duration-150';
+                row.innerHTML = `
+                    <td class="py-3 px-6 text-left whitespace-nowrap">${index + 1}</td>
+                    <td class="py-3 px-6 text-left">${voucher.customerName}</td>
+                    <td class="py-3 px-6 text-left">${voucher.phoneModel}</td>
+                    <td class="py-3 px-6 text-left">${voucher.phoneColor}</td>
+                    <td class="py-3 px-6 text-left">${voucher.error}</td>
+                    <td class="py-3 px-6 text-left">${voucher.voucherNumber}</td>
+                    <td class="py-3 px-6 text-left">${(Number(voucher.amount) || 0).toLocaleString()} ¥</td>
+                    <td class="py-3 px-6 text-left">
+                        <button class="edit-voucher-btn bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded-lg text-sm mr-2" data-id="${voucher.id}">
+                            ပြုပြင်ရန်
+                        </button>
+                        <button class="delete-voucher-btn bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-lg text-sm" data-id="${voucher.id}">
+                            ဖျက်ရန်
+                        </button>
+                    </td>
+                `;
+                voucherTableBody.appendChild(row);
+            });
+
+            document.querySelectorAll('.edit-voucher-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const voucherId = event.target.dataset.id;
+                    const row = event.target.closest('tr');
+                    if (!row) return;
+
+                    // Prevent re-entering edit mode if already editing
+                    if (row.classList.contains('editing')) return;
+                    row.classList.add('editing');
+
+                    // Cells: 0=index, 1=customerName, 2=phoneModel, 3=phoneColor, 4=error, 5=voucherNumber, 6=amount, 7=actions
+                    const customerCell = row.children[1];
+                    const modelCell = row.children[2];
+                    const colorCell = row.children[3];
+                    const errorCell = row.children[4];
+                    const voucherNoCell = row.children[5];
+                    const amountCell = row.children[6];
+                    const actionsCell = row.children[7];
+
+                    const customerVal = customerCell.textContent.trim();
+                    const modelVal = modelCell.textContent.trim();
+                    const colorVal = colorCell.textContent.trim();
+                    const errorVal = errorCell.textContent.trim();
+                    const voucherNoVal = voucherNoCell.textContent.trim();
+                    const amountText = amountCell.textContent.replace(/[^0-9.\-]/g, '').trim();
+
+                    customerCell.innerHTML = `<input type="text" class="bg-gray-600 p-1 rounded w-full" value="${customerVal}">`;
+                    modelCell.innerHTML = `<input type="text" class="bg-gray-600 p-1 rounded w-full" value="${modelVal}">`;
+                    colorCell.innerHTML = `<input type="text" class="bg-gray-600 p-1 rounded w-full" value="${colorVal}">`;
+                    errorCell.innerHTML = `<input type="text" class="bg-gray-600 p-1 rounded w-full" value="${errorVal}">`;
+                    voucherNoCell.innerHTML = `<input type="text" class="bg-gray-600 p-1 rounded w-full" value="${voucherNoVal}">`;
+                    amountCell.innerHTML = `<input type="number" step="0.01" class="bg-gray-600 p-1 rounded w-full text-right" value="${amountText}">`;
+
+                    actionsCell.innerHTML = `
+                        <button class="save-voucher-btn bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded-lg text-sm mr-2" data-id="${voucherId}">သိမ်းရန်</button>
+                        <button class="cancel-edit-voucher-btn bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg text-sm">ပယ်ဖျက်ရန်</button>
+                    `;
+
+                    actionsCell.querySelector('.save-voucher-btn').addEventListener('click', async (e) => {
+                        const rowEl = e.target.closest('tr');
+                        const updated = {
+                            customerName: rowEl.children[1].querySelector('input').value.trim(),
+                            phoneModel: rowEl.children[2].querySelector('input').value.trim(),
+                            phoneColor: rowEl.children[3].querySelector('input').value.trim(),
+                            error: rowEl.children[4].querySelector('input').value.trim(),
+                            voucherNumber: rowEl.children[5].querySelector('input').value.trim(),
+                            amount: parseFloat(rowEl.children[6].querySelector('input').value)
+                        };
+
+                        if (!updated.customerName || !updated.phoneModel || !updated.error || !updated.voucherNumber || isNaN(updated.amount) || updated.amount <= 0) {
+                            showMessage("ကျေးဇူးပြု၍ လိုအပ်သော အချက်အလက်များ ဖြည့်သွင်းပါ", true);
+                            return;
+                        }
+
+                        try {
+                            if (isOnline) {
+                                // Online: Update directly in Firebase
+                                const voucherRef = doc(db, `artifacts/${appId}/users/${currentUserId}/vouchers/${voucherId}`);
+                                await updateDoc(voucherRef, updated);
+                                showMessage("Voucher ကို ပြင်ဆင်ပြီးပါပြီ။");
+                            } else {
+                                // Offline: Queue for later sync
+                                queueOfflineAction({
+                                    type: 'updateVoucher',
+                                    voucherId: voucherId,
+                                    data: updated
+                                });
+                                showMessage("Voucher ကို ပြင်ဆင်ပြီးပါပြီ။ (အော့ဖ်လိုင်းတွင် သိမ်းထားပါသည်)", false);
+                            }
+                            // Re-render to exit edit mode and reflect latest snapshot
+                            renderDailyVouchers();
+                        } catch (error) {
+                            showMessage(`Error updating voucher: ${error.message}`, true);
+                            console.error("Error updating voucher: ", error);
+                        }
+                    });
+
+                    actionsCell.querySelector('.cancel-edit-voucher-btn').addEventListener('click', () => {
+                        // Simply re-render current list to restore non-editing state
+                        renderDailyVouchers();
+                    });
+                });
+            });
+
+            document.querySelectorAll('.delete-voucher-btn').forEach(button => {
+                button.addEventListener('click', async (event) => {
+                    const voucherId = event.target.dataset.id;
+                    const row = event.target.closest('tr');
+                    const customer = row?.children?.[1]?.textContent || '';
+                    const voucherNo = row?.children?.[5]?.textContent || '';
+                    const confirmed = window.confirm(`ယခု Voucher ကို ဖျက်ရန် သေချာပါသလား?\nCustomer: ${customer}\nVoucher No: ${voucherNo}`);
+                    if (!confirmed) return;
+                    try {
+                        if (isOnline) {
+                            // Online: Delete directly from Firebase
+                            const voucherRef = doc(db, `artifacts/${appId}/users/${currentUserId}/vouchers/${voucherId}`);
+                            await deleteDoc(voucherRef);
+                            showMessage("Voucher ဖျက်ပြီးပါပြီ။");
+                        } else {
+                            // Offline: Queue for later sync
+                            queueOfflineAction({
+                                type: 'deleteVoucher',
+                                voucherId: voucherId
+                            });
+                            showMessage("Voucher ဖျက်ပြီးပါပြီ။ (အော့ဖ်လိုင်းတွင် သိမ်းထားပါသည်)", false);
+                        }
+                    } catch (error) {
+                        showMessage(`Error deleting voucher: ${error.message}`, true);
+                        console.error("Error deleting voucher: ", error);
+                    }
+                });
+            });
+        }
+
+        datePicker.addEventListener('change', (event) => {
+            // Clear search mode when date changes
+            if (isSearchMode) {
+                isSearchMode = false;
+                searchResults = [];
+                voucherSearchInput.value = '';
+                voucherSearchQuery = '';
+            }
+            listenForVouchers(event.target.value);
+        });
+
+        addVoucherForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            if (!currentUserId) {
+                showMessage("ကျေးဇူးပြု၍ အကောင့်ဝင်ပါ", true);
+                return;
+            }
+
+            const selectedTechnician = technicianSelect.value;
+            if (!selectedTechnician) {
+                showMessage("ကျေးဇူးပြု၍ Technician ရွေးချယ်ပါ", true);
+                return;
+            }
+
+            const customerName = customerNameInput.value.trim();
+            const phoneModel = phoneModelInput.value.trim();
+            const phoneColor = phoneColorInput.value.trim();
+            const error = errorInput.value.trim();
+            const voucherNumber = voucherNumberInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+            const date = datePicker.value;
+
+            if (!customerName || !phoneModel || !error || !voucherNumber || isNaN(amount) || amount <= 0) {
+                showMessage("ကျေးဇူးပြု၍ လိုအပ်သော အချက်အလက်များ ဖြည့်သွင်းပါ", true);
+                return;
+            }
+
+            try {
+                const voucherData = {
+                    customerName,
+                    phoneModel,
+                    phoneColor,
+                    error,
+                    voucherNumber,
+                    amount,
+                    date,
+                    technicianName: selectedTechnician,
+                    timestamp: new Date()
+                };
+
+                if (isOnline) {
+                    // Online: Add directly to Firebase
+                    const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                    await addDoc(vouchersCollection, voucherData);
+                    showMessage("Voucher ထည့်သွင်းပြီးပါပြီ။");
+                    
+                } else {
+                    // Offline: Queue for later sync
+                    queueOfflineAction({
+                        type: 'addVoucher',
+                        data: voucherData
+                    });
+                    showMessage("Voucher ထည့်သွင်းပြီးပါပြီ။ (အော့ဖ်လိုင်းတွင် သိမ်းထားပါသည်)", false);
+                }
+                
+                // Clear form fields
+                customerNameInput.value = '';
+                phoneModelInput.value = '';
+                phoneColorInput.value = '';
+                errorInput.value = '';
+                voucherNumberInput.value = '';
+                amountInput.value = '';
+            } catch (error) {
+                showMessage(`Error adding voucher: ${error.message}`, true);
+                console.error("Error adding document: ", error);
+            }
+        });
+
+        calculateRangeBtn.addEventListener('click', async () => {
+            const startDate = startDatePicker.value;
+            const endDate = endDatePicker.value;
+            const selectedTechnician = rangeTechnicianSelect.value;
+
+            if (!startDate || !endDate) {
+                showMessage("ကျေးဇူးပြု၍ စတင်ရက်စွဲနှင့် ပြီးဆုံးရက်စွဲ ရွေးချယ်ပါ", true);
+                return;
+            }
+
+            try {
+                const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                let q = query(vouchersCollection,
+                    where("date", ">=", startDate),
+                    where("date", "<=", endDate)
+                );
+
+                const querySnapshot = await getDocs(q);
+                let technicianTotals = {};
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const techName = data.technicianName || 'Unknown';
+                    
+                    // If a specific technician is selected, only count their vouchers
+                    if (selectedTechnician === 'all' || techName === selectedTechnician) {
+                        if (!technicianTotals[techName]) {
+                            technicianTotals[techName] = {
+                                total: 0,
+                                count: 0
+                            };
+                        }
+                        
+                        technicianTotals[techName].total += Number(data.amount) || 0;
+                        technicianTotals[techName].count += 1;
+                    }
+                });
+
+                displayRangeTotals(technicianTotals);
+            } catch (error) {
+                showMessage(`Error calculating range totals: ${error.message}`, true);
+                console.error("Error getting range totals: ", error);
+            }
+        });
+
+        function displayRangeTotals(totals) {
+            rangeTotalsDisplay.innerHTML = '';
+            if (Object.keys(totals).length === 0) {
+                rangeTotalsDisplay.innerHTML = '<p class="text-center text-gray-400 col-span-full">ရွေးချယ်ထားသော ရက်အပိုင်းအခြားအတွက် မှတ်တမ်းမရှိပါ</p>';
+                return;
+            }
+
+            for (const [technician, data] of Object.entries(totals)) {
+                const totalItem = document.createElement('div');
+                totalItem.className = 'bg-gray-600 p-4 rounded-lg shadow-md';
+                totalItem.innerHTML = `
+                    <p class="text-lg font-semibold text-teal-300">${technician}</p>
+                    <p class="text-xl font-bold text-white mt-1">${data.total.toLocaleString()} ¥</p>
+                    <p class="text-sm text-gray-300 mt-1">Voucher Count: ${data.count}</p>
+                `;
+                rangeTotalsDisplay.appendChild(totalItem);
+            }
+        }
+
+        exportRangeBtn.addEventListener('click', async () => {
+            const startDate = startDatePicker.value;
+            const endDate = endDatePicker.value;
+            const selectedTechnician = rangeTechnicianSelect.value;
+
+            if (!startDate || !endDate) {
+                showMessage("ကျေးဇူးပြု၍ စတင်ရက်စွဲနှင့် ပြီးဆုံးရက်စွဲ ရွေးချယ်ပါ", true);
+                return;
+            }
+
+            try {
+                const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                let q = query(vouchersCollection,
+                    where("date", ">=", startDate),
+                    where("date", "<=", endDate)
+                );
+
+                const querySnapshot = await getDocs(q);
+                let vouchers = [];
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    // If a specific technician is selected, only include their vouchers
+                    if (selectedTechnician === 'all' || data.technicianName === selectedTechnician) {
+                        vouchers.push({
+                            date: data.date,
+                            technicianName: data.technicianName || 'Unknown',
+                            customerName: data.customerName,
+                            phoneModel: data.phoneModel,
+                            phoneColor: data.phoneColor,
+                            error: data.error,
+                            voucherNumber: data.voucherNumber,
+                            amount: data.amount
+                        });
+                    }
+                });
+
+                if (vouchers.length === 0) {
+                    showMessage("ထုတ်ယူရန် ဒေတာမရှိပါ", true);
+                    return;
+                }
+
+                // Create Excel content
+                let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // BOM for UTF-8
+                csvContent += "ရက်စွဲ,Technician,Customer Name,Phone Model,Phone Color,Error,Voucher Number,Amount\n";
+                
+                vouchers.forEach(voucher => {
+                    csvContent += `${safeCSV(voucher.date)},${safeCSV(voucher.technicianName)},${safeCSV(voucher.customerName)},${safeCSV(voucher.phoneModel)},${safeCSV(voucher.phoneColor)},${safeCSV(voucher.error)},${safeCSV(voucher.voucherNumber)},${safeCSV(voucher.amount)}\n`;
+                });
+
+                // Create download link
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `vouchers_${startDate}_to_${endDate}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showMessage("Excel ဖိုင်ထုတ်ယူပြီးပါပြီ။");
+            } catch (error) {
+                showMessage(`Error exporting data: ${error.message}`, true);
+                console.error("Error exporting data: ", error);
+            }
+        });
+
+        exportByTechnicianBtn.addEventListener('click', async () => {
+            const XLSX = window.XLSX;
+            const startDate = startDatePicker.value;
+            const endDate = endDatePicker.value;
+            const selectedTechnician = rangeTechnicianSelect.value;
+ 
+             if (!startDate || !endDate) {
+                 showMessage("ကျေးဇူးပြု၍ စတင်ရက်စွဲနှင့် ပြီးဆုံးရက်စွဲ ရွေးချယ်ပါ", true);
+                 return;
+             }
+ 
+             try {
+                 const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                 const q = query(vouchersCollection,
+                     where("date", ">=", startDate),
+                     where("date", "<=", endDate)
+                 );
+                 const snap = await getDocs(q);
+ 
+                 // Gather list of technicians to export (respect dropdown if not 'all')
+                 const techniciansSet = new Set();
+                 snap.forEach(s => {
+                     const d = s.data();
+                     const tech = d.technicianName || 'Unknown';
+                     if (selectedTechnician === 'all' || tech === selectedTechnician) {
+                         techniciansSet.add(tech);
+                     }
+                 });
+                 const technicians = Array.from(techniciansSet);
+                 if (technicians.length === 0) {
+                     showMessage("ထုတ်ယူရန် ဒေတာမရှိပါ", true);
+                     return;
+                 }
+ 
+                 // Preprocess: group all vouchers by technician -> date
+                 const vouchersByTechDate = {}; // { tech: { date: [{...voucher}] } }
+                 snap.forEach(s => {
+                     const d = s.data();
+                     const tech = d.technicianName || 'Unknown';
+                     if (!(selectedTechnician === 'all' || tech === selectedTechnician)) return;
+                     const dateKey = d.date || '';
+                     if (!vouchersByTechDate[tech]) vouchersByTechDate[tech] = {};
+                     if (!vouchersByTechDate[tech][dateKey]) vouchersByTechDate[tech][dateKey] = [];
+                     vouchersByTechDate[tech][dateKey].push(d);
+                 });
+ 
+                 // Build workbook with one sheet per technician
+                 const wb = XLSX.utils.book_new();
+ 
+                 for (const tech of technicians) {
+                     const byDate = vouchersByTechDate[tech] || {};
+                     const allDates = Object.keys(byDate).sort();
+ 
+                     const ws = XLSX.utils.aoa_to_sheet([]);
+                     let currentRow = 0;
+ 
+                     // Daily sections for each date
+                     const dailyHeader = ["Date", "Customer Name", "Phone Model", "Phone Color", "Error", "Voucher Number", "Amount (¥)"];
+                     const dailyTotalsByDate = {}; // for monthly section later
+ 
+                     for (let i = 0; i < allDates.length; i++) {
+                         const dateKey = allDates[i];
+                         const vouchers = byDate[dateKey] || [];
+                         const dayRows = vouchers.map(v => [
+                             v.date || '', v.customerName || '', v.phoneModel || '', v.phoneColor || '', v.error || '', v.voucherNumber || '', (Number(v.amount) || 0)
+                         ]);
+                         const dayTotal = dayRows.reduce((sum, row) => sum + (Number(row[6]) || 0), 0);
+                         dailyTotalsByDate[dateKey] = dayTotal;
+ 
+                         // Add a section title row for clarity
+                         XLSX.utils.sheet_add_aoa(ws, [[`Daily - ${dateKey} (Technician: ${tech})`]], { origin: { r: currentRow, c: 0 } });
+                         currentRow += 1;
+ 
+                         // Header
+                         XLSX.utils.sheet_add_aoa(ws, [dailyHeader], { origin: { r: currentRow, c: 0 } });
+                         currentRow += 1;
+                         // Data rows
+                         if (dayRows.length > 0) {
+                             XLSX.utils.sheet_add_aoa(ws, dayRows, { origin: { r: currentRow, c: 0 } });
+                             currentRow += dayRows.length;
+                         }
+                         // Daily total row
+                         XLSX.utils.sheet_add_aoa(ws, [["", "", "", "", "", "Daily Total", dayTotal]], { origin: { r: currentRow, c: 0 } });
+                         currentRow += 2; // leave one blank row between day sections
+                     }
+ 
+                     // Monthly totals section (per month within range)
+                     const totalsByMonth = {}; // { 'YYYY-MM': { dates: [[date, total]], monthTotal: number } }
+                     Object.entries(dailyTotalsByDate).forEach(([dateKey, total]) => {
+                         const monthKey = dateKey.slice(0, 7);
+                         if (!totalsByMonth[monthKey]) totalsByMonth[monthKey] = { dates: [], monthTotal: 0 };
+                         totalsByMonth[monthKey].dates.push([dateKey, total]);
+                         totalsByMonth[monthKey].monthTotal += total;
+                     });
+ 
+                     const sortedMonths = Object.keys(totalsByMonth).sort();
+                     for (const monthKey of sortedMonths) {
+                         const sectionTitle = [[`Monthly Totals - ${monthKey} (Technician: ${tech})`]];
+                         XLSX.utils.sheet_add_aoa(ws, sectionTitle, { origin: { r: currentRow, c: 0 } });
+                         currentRow += 1;
+ 
+                         const monthlyHeader = ["Date", "Daily Total (¥)"];
+                         XLSX.utils.sheet_add_aoa(ws, [monthlyHeader], { origin: { r: currentRow, c: 0 } });
+                         currentRow += 1;
+ 
+                         const rows = totalsByMonth[monthKey].dates.sort((a, b) => (a[0] < b[0] ? -1 : 1));
+                         if (rows.length > 0) {
+                             XLSX.utils.sheet_add_aoa(ws, rows, { origin: { r: currentRow, c: 0 } });
+                             currentRow += rows.length;
+                         }
+ 
+                         const monthTotalRow = [["Month Total", totalsByMonth[monthKey].monthTotal]];
+                         XLSX.utils.sheet_add_aoa(ws, monthTotalRow, { origin: { r: currentRow, c: 0 } });
+                         currentRow += 2; // blank row after each month section
+                     }
+ 
+                     // Column widths
+                     ws['!cols'] = [
+                         { wch: 12 }, { wch: 20 }, { wch: 16 }, { wch: 14 }, { wch: 24 }, { wch: 18 }, { wch: 14 }
+                     ];
+ 
+                     XLSX.utils.book_append_sheet(wb, ws, tech.substring(0, 31));
+                 }
+ 
+                 const fileName = `technicians_${startDate}_to_${endDate}.xlsx`;
+                 XLSX.writeFile(wb, fileName);
+                 showMessage("Technician အလိုက် XLSX ဖိုင် ထုတ်ယူပြီးပါပြီ။");
+             } catch (error) {
+                 showMessage(`Error exporting data: ${error.message}`, true);
+                 console.error("Error exporting data: ", error);
+             }
+         });
+
+        // Theme Toggle Functionality
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            themeIcon.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeIcon.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+            
+            // Update charts if they exist
+            Object.values(charts).forEach(chart => {
+                if (chart && chart.update) {
+                    chart.update();
+                }
+            });
+        });
+
+        // Analytics Toggle
+        toggleAnalyticsBtn.addEventListener('click', () => {
+            analyticsSection.classList.toggle('hidden-section');
+            if (!analyticsSection.classList.contains('hidden-section')) {
+                toggleAnalyticsBtn.textContent = '📊 Analytics ပိတ်ရန်';
+                loadAnalytics();
+            } else {
+                toggleAnalyticsBtn.textContent = '📊 Analytics ကြည့်ရန်';
+            }
+        });
+
+        // Backup Toggle
+        toggleBackupBtn.addEventListener('click', () => {
+            backupSection.classList.toggle('hidden-section');
+            if (!backupSection.classList.contains('hidden-section')) {
+                toggleBackupBtn.textContent = '💾 ပိတ်ရန်';
+                loadBackupHistory();
+            } else {
+                toggleBackupBtn.textContent = '💾 Backup/Restore';
+            }
+        });
+
+        // Monthly Totals Toggle
+        toggleMonthlyTotalsBtn.addEventListener('click', () => {
+            monthlyTotalsSection.classList.toggle('hidden-section');
+            if (!monthlyTotalsSection.classList.contains('hidden-section')) {
+                toggleMonthlyTotalsBtn.textContent = '📊 စုစုပေါင်း ပိတ်ရန်';
+            } else {
+                toggleMonthlyTotalsBtn.textContent = '📊 စုစုပေါင်း ကြည့်ရန်';
+            }
+        });
+
+        // Daily Total Toggle
+        toggleDailyTotalBtn.addEventListener('click', () => {
+            dailyTotalSection.classList.toggle('hidden-section');
+            if (!dailyTotalSection.classList.contains('hidden-section')) {
+                toggleDailyTotalBtn.textContent = '💰 နေ့စဉ် စုစုပေါင်း ပိတ်ရန်';
+            } else {
+                toggleDailyTotalBtn.textContent = '💰 နေ့စဉ် စုစုပေါင်း ကြည့်ရန်';
+            }
+        });
+
+
+        // Analytics Functions
+        async function loadAnalytics() {
+            if (!currentUserId) return;
+            
+            try {
+                showMessage("Analytics ဒေတာ ရယူနေပါသည်...", false);
+                
+                // Get all vouchers for analytics
+                const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                const querySnapshot = await getDocs(vouchersCollection);
+                
+                let vouchers = [];
+                querySnapshot.forEach((doc) => {
+                    vouchers.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Calculate revenue summaries
+                calculateRevenueSummaries(vouchers);
+                
+                // Create charts
+                createDailyChart(vouchers);
+                createMonthlyChart(vouchers);
+                createTechnicianChart(vouchers);
+                createServiceChart(vouchers);
+                
+                showMessage("Analytics ဒေတာ ပြီးပါပြီ။", false);
+            } catch (error) {
+                showMessage(`Analytics ဒေတာ ရယူရာတွင် အမှားတစ်ခု ဖြစ်ပွားပါသည်: ${error.message}`, true);
+                console.error("Error loading analytics: ", error);
+            }
+        }
+
+        function calculateRevenueSummaries(vouchers) {
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            const weekStart = new Date(now.setDate(now.getDate() - now.getDay())).toISOString().split('T')[0];
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+
+            let todayTotal = 0;
+            let weekTotal = 0;
+            let monthTotal = 0;
+            let totalAmount = 0;
+
+            vouchers.forEach(voucher => {
+                const amount = Number(voucher.amount) || 0;
+                totalAmount += amount;
+
+                if (voucher.date === today) {
+                    todayTotal += amount;
+                }
+                if (voucher.date >= weekStart) {
+                    weekTotal += amount;
+                }
+                if (voucher.date >= monthStart) {
+                    monthTotal += amount;
+                }
+            });
+
+            todayRevenue.textContent = `${todayTotal.toLocaleString()} ¥`;
+            weekRevenue.textContent = `${weekTotal.toLocaleString()} ¥`;
+            monthRevenue.textContent = `${monthTotal.toLocaleString()} ¥`;
+            totalRevenue.textContent = `${totalAmount.toLocaleString()} ¥`;
+        }
+
+        function createDailyChart(vouchers) {
+            const ctx = dailyChart.getContext('2d');
+            if (charts.daily) charts.daily.destroy();
+
+            // Get last 30 days data
+            const last30Days = [];
+            for (let i = 29; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                last30Days.push(date.toISOString().split('T')[0]);
+            }
+
+            const dailyData = {};
+            last30Days.forEach(date => {
+                dailyData[date] = 0;
+            });
+
+            vouchers.forEach(voucher => {
+                if (dailyData.hasOwnProperty(voucher.date)) {
+                    dailyData[voucher.date] += Number(voucher.amount) || 0;
+                }
+            });
+
+            charts.daily = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: last30Days.map(date => new Date(date).toLocaleDateString()),
+                    datasets: [{
+                        label: 'Daily Revenue (¥)',
+                        data: last30Days.map(date => dailyData[date]),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') },
+                            grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border-color') }
+                        },
+                        y: {
+                            ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') },
+                            grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border-color') }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createMonthlyChart(vouchers) {
+            const ctx = monthlyChart.getContext('2d');
+            if (charts.monthly) charts.monthly.destroy();
+
+            // Get last 12 months data
+            const last12Months = [];
+            for (let i = 11; i >= 0; i--) {
+                const date = new Date();
+                date.setMonth(date.getMonth() - i);
+                last12Months.push(date.toISOString().slice(0, 7)); // YYYY-MM format
+            }
+
+            const monthlyData = {};
+            last12Months.forEach(month => {
+                monthlyData[month] = 0;
+            });
+
+            vouchers.forEach(voucher => {
+                const month = voucher.date.slice(0, 7);
+                if (monthlyData.hasOwnProperty(month)) {
+                    monthlyData[month] += Number(voucher.amount) || 0;
+                }
+            });
+
+            charts.monthly = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: last12Months.map(month => new Date(month + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'short' })),
+                    datasets: [{
+                        label: 'Monthly Revenue (¥)',
+                        data: last12Months.map(month => monthlyData[month]),
+                        backgroundColor: '#10b981',
+                        borderColor: '#059669',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') },
+                            grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border-color') }
+                        },
+                        y: {
+                            ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') },
+                            grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border-color') }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createTechnicianChart(vouchers) {
+            const ctx = technicianChart.getContext('2d');
+            if (charts.technician) charts.technician.destroy();
+
+            const technicianData = {};
+            vouchers.forEach(voucher => {
+                const tech = voucher.technicianName || 'Unknown';
+                technicianData[tech] = (technicianData[tech] || 0) + (Number(voucher.amount) || 0);
+            });
+
+            const labels = Object.keys(technicianData);
+            const data = Object.values(technicianData);
+
+            charts.technician = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createServiceChart(vouchers) {
+            const ctx = serviceChart.getContext('2d');
+            if (charts.service) charts.service.destroy();
+
+            const serviceData = {};
+            vouchers.forEach(voucher => {
+                const service = voucher.error || 'Unknown';
+                serviceData[service] = (serviceData[service] || 0) + 1;
+            });
+
+            const labels = Object.keys(serviceData);
+            const data = Object.values(serviceData);
+
+            charts.service = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Backup Functions
+        async function createBackup(type = 'all') {
+            if (!currentUserId) {
+                showMessage("ကျေးဇူးပြု၍ အကောင့်ဝင်ပါ", true);
+                return;
+            }
+
+            try {
+                showMessage("Backup ဖန်တီးနေပါသည်...", false);
+                
+                const backup = {
+                    type: type,
+                    timestamp: new Date().toISOString(),
+                    userId: currentUserId,
+                    data: {}
+                };
+
+                if (type === 'all' || type === 'vouchers') {
+                    const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                    const vouchersSnapshot = await getDocs(vouchersCollection);
+                    backup.data.vouchers = [];
+                    vouchersSnapshot.forEach((doc) => {
+                        backup.data.vouchers.push({ id: doc.id, ...doc.data() });
+                    });
+                }
+
+                if (type === 'all' || type === 'technicians') {
+                    const techniciansRef = doc(db, `artifacts/${appId}/users/${currentUserId}/technicianList/technicians`);
+                    const techniciansSnapshot = await getDoc(techniciansRef);
+                    if (techniciansSnapshot.exists()) {
+                        backup.data.technicians = techniciansSnapshot.data();
+                    }
+                }
+
+                // Download backup file
+                const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `backup_${type}_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                // Save to backup history
+                saveBackupToHistory(backup);
+                
+                showMessage(`${type} backup ဖန်တီးပြီးပါပြီ။`, false);
+            } catch (error) {
+                showMessage(`Backup ဖန်တီးရာတွင် အမှားတစ်ခု ဖြစ်ပွားပါသည်: ${error.message}`, true);
+                console.error("Error creating backup: ", error);
+            }
+        }
+
+        function saveBackupToHistory(backup) {
+            const history = JSON.parse(localStorage.getItem('backupHistory') || '[]');
+            history.unshift({
+                type: backup.type,
+                timestamp: backup.timestamp,
+                voucherCount: backup.data.vouchers ? backup.data.vouchers.length : 0,
+                technicianCount: backup.data.technicians ? backup.data.technicians.names?.length || 0 : 0
+            });
+            
+            // Keep only last 10 backups
+            if (history.length > 10) {
+                history.splice(10);
+            }
+            
+            localStorage.setItem('backupHistory', JSON.stringify(history));
+            loadBackupHistory();
+        }
+
+        function loadBackupHistory() {
+            const history = JSON.parse(localStorage.getItem('backupHistory') || '[]');
+            
+            if (history.length === 0) {
+                backupHistory.innerHTML = '<p class="theme-text-muted text-center">No backups created yet</p>';
+                return;
+            }
+
+            backupHistory.innerHTML = history.map(backup => `
+                <div class="office-card p-3 flex justify-between items-center">
+                    <div>
+                        <p class="theme-text-primary font-semibold">${backup.type} Backup</p>
+                        <p class="theme-text-muted text-sm">${new Date(backup.timestamp).toLocaleString()}</p>
+                        <p class="theme-text-muted text-xs">Vouchers: ${backup.voucherCount}, Technicians: ${backup.technicianCount}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function restoreData() {
+            if (!backupData) {
+                showMessage("ကျေးဇူးပြု၍ backup ဖိုင်ရွေးချယ်ပါ", true);
+                return;
+            }
+
+            const confirmed = window.confirm(`ဤ backup ဒေတာကို restore လုပ်ရန် သေချာပါသလား?\nဒေတာအားလုံး အသစ်နှင့် အစားထိုးသွားမည် ဖြစ်ပါသည်။`);
+            if (!confirmed) return;
+
+            try {
+                showMessage("ဒေတာ restore လုပ်နေပါသည်...", false);
+
+                if (backupData.data.vouchers) {
+                    // Clear existing vouchers
+                    const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                    const existingVouchers = await getDocs(vouchersCollection);
+                    const deletePromises = existingVouchers.docs.map(doc => deleteDoc(doc.ref));
+                    await Promise.all(deletePromises);
+
+                    // Add restored vouchers
+                    const addPromises = backupData.data.vouchers.map(voucher => {
+                        const { id, ...voucherData } = voucher;
+                        return addDoc(vouchersCollection, voucherData);
+                    });
+                    await Promise.all(addPromises);
+                }
+
+                if (backupData.data.technicians) {
+                    const techniciansRef = doc(db, `artifacts/${appId}/users/${currentUserId}/technicianList/technicians`);
+                    await setDoc(techniciansRef, backupData.data.technicians);
+                }
+
+                showMessage("ဒေတာ restore လုပ်ပြီးပါပြီ။", false);
+                
+                // Clear restore data
+                backupData = null;
+                restoreFileInput.value = '';
+                restoreBtn.disabled = true;
+                previewRestoreBtn.disabled = true;
+                restorePreview.classList.add('hidden');
+                
+            } catch (error) {
+                showMessage(`ဒေတာ restore လုပ်ရာတွင် အမှားတစ်ခု ဖြစ်ပွားပါသည်: ${error.message}`, true);
+                console.error("Error restoring data: ", error);
+            }
+        }
+
+        function previewRestoreData() {
+            if (!backupData) return;
+
+            const preview = `
+                <strong>Backup Type:</strong> ${backupData.type}<br>
+                <strong>Created:</strong> ${new Date(backupData.timestamp).toLocaleString()}<br>
+                <strong>Vouchers:</strong> ${backupData.data.vouchers ? backupData.data.vouchers.length : 0}<br>
+                <strong>Technicians:</strong> ${backupData.data.technicians ? backupData.data.technicians.names?.length || 0 : 0}
+            `;
+            
+            previewContent.innerHTML = preview;
+            restorePreview.classList.remove('hidden');
+        }
+
+        // Event Listeners
+        backupAllBtn.addEventListener('click', () => createBackup('all'));
+        backupVouchersBtn.addEventListener('click', () => createBackup('vouchers'));
+        backupTechniciansBtn.addEventListener('click', () => createBackup('technicians'));
+        
+        restoreFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        backupData = JSON.parse(e.target.result);
+                        restoreBtn.disabled = false;
+                        previewRestoreBtn.disabled = false;
+                        showMessage("Backup ဖိုင် ဖတ်ပြီးပါပြီ။", false);
+                    } catch (error) {
+                        showMessage("အမှားတစ်ခု ရှိသော backup ဖိုင်ဖြစ်ပါသည်။", true);
+                        console.error("Error parsing backup file: ", error);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        restoreBtn.addEventListener('click', restoreData);
+        previewRestoreBtn.addEventListener('click', previewRestoreData);
+
+        // Offline Data Management
+        function queueOfflineAction(action) {
+            const actionWithTimestamp = {
+                ...action,
+                timestamp: new Date().toISOString(),
+                id: Date.now() + Math.random()
+            };
+            
+            offlineQueue.push(actionWithTimestamp);
+            localStorage.setItem('offlineQueue', JSON.stringify(offlineQueue));
+            
+            console.log('Action queued for offline sync:', actionWithTimestamp);
+        }
+        
+        async function processOfflineQueue() {
+            if (syncInProgress || offlineQueue.length === 0) return;
+            
+            syncInProgress = true;
+            setConnectionStatus('syncing', 'Syncing...');
+            
+            try {
+                showMessage(`ဒေတာ ${offlineQueue.length} ခု ချိတ်ဆက်နေသည်...`, false);
+                
+                const successfulActions = [];
+                const failedActions = [];
+                
+                for (const action of offlineQueue) {
+                    try {
+                        await executeOfflineAction(action);
+                        successfulActions.push(action);
+                    } catch (error) {
+                        console.error('Failed to sync action:', action, error);
+                        failedActions.push(action);
+                    }
+                }
+                
+                // Remove successful actions from queue
+                offlineQueue = failedActions;
+                localStorage.setItem('offlineQueue', JSON.stringify(offlineQueue));
+                
+                if (successfulActions.length > 0) {
+                    showMessage(`ဒေတာ ${successfulActions.length} ခု ချိတ်ဆက်ပြီးပါပြီ။`, false);
+                    
+                    // Refresh data after sync
+                    if (currentUserId) {
+                        listenForVouchers(datePicker.value);
+                        listenForTechnicians();
+                        listenForMonthlyTotals();
+                    }
+                }
+                
+                if (failedActions.length > 0) {
+                    showMessage(`ဒေတာ ${failedActions.length} ခု ချိတ်ဆက်မရပါ။ နောက်တစ်ကြိမ် ကြိုးစားပါမည်။`, true);
+                }
+                
+            } catch (error) {
+                console.error('Error processing offline queue:', error);
+                showMessage("ဒေတာ ချိတ်ဆက်ရာတွင် အမှားတစ်ခု ဖြစ်ပွားပါသည်။", true);
+            } finally {
+                syncInProgress = false;
+                setConnectionStatus('online', 'Online');
+            }
+        }
+        
+        async function executeOfflineAction(action) {
+            switch (action.type) {
+                case 'addVoucher':
+                    const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                    await addDoc(vouchersCollection, action.data);
+                    break;
+                    
+                case 'updateVoucher':
+                    const voucherRef = doc(db, `artifacts/${appId}/users/${currentUserId}/vouchers/${action.voucherId}`);
+                    await updateDoc(voucherRef, action.data);
+                    break;
+                    
+                case 'deleteVoucher':
+                    const deleteVoucherRef = doc(db, `artifacts/${appId}/users/${currentUserId}/vouchers/${action.voucherId}`);
+                    await deleteDoc(deleteVoucherRef);
+                    break;
+                    
+                case 'addTechnician':
+                    const techniciansRef = doc(db, `artifacts/${appId}/users/${currentUserId}/technicianList/technicians`);
+                    await setDoc(techniciansRef, action.data);
+                    break;
+                    
+                case 'updateTechnician':
+                    const updateTechnicianRef = doc(db, `artifacts/${appId}/users/${currentUserId}/technicianList/technicians`);
+                    await setDoc(updateTechnicianRef, action.data);
+                    break;
+                    
+                default:
+                    console.warn('Unknown action type:', action.type);
+            }
+        }
+        
+        function loadOfflineQueue() {
+            const savedQueue = localStorage.getItem('offlineQueue');
+            if (savedQueue) {
+                try {
+                    offlineQueue = JSON.parse(savedQueue);
+                    console.log('Loaded offline queue:', offlineQueue.length, 'actions');
+                } catch (error) {
+                    console.error('Error loading offline queue:', error);
+                    offlineQueue = [];
+                }
+            }
+        }
+
+        // Connection Status Monitoring
+        function initConnectionMonitoring() {
+            // Load offline queue
+            loadOfflineQueue();
+            
+            // Initial connection check
+            updateConnectionStatus();
+            
+            // Monitor online/offline events
+            window.addEventListener('online', () => {
+                isOnline = true;
+                updateConnectionStatus();
+                showMessage("အင်တာနက် ချိတ်ဆက်ပြီးပါပြီ။", false);
+                
+                // Automatically sync offline data
+                setTimeout(() => {
+                    processOfflineQueue();
+                }, 1000);
+            });
+            
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                updateConnectionStatus();
+                showMessage("အင်တာနက် ချိတ်ဆက်မှု ပြတ်တောက်ပါသည်။", true);
+            });
+            
+            // Periodic connection check
+            setInterval(updateConnectionStatus, 5000);
+        }
+        
+        function updateConnectionStatus() {
+            const browserOnline = navigator.onLine;
+            
+            if (browserOnline) {
+                // Test actual connectivity with Firebase
+                testFirebaseConnection();
+            } else {
+                setConnectionStatus('offline', 'Offline');
+            }
+        }
+        
+        async function testFirebaseConnection() {
+            try {
+                setConnectionStatus('syncing', 'Syncing...');
+                
+                // Test Firebase connection by attempting a simple read
+                if (currentUserId) {
+                    const testRef = doc(db, `artifacts/${appId}/users/${currentUserId}/technicianList/technicians`);
+                    await getDoc(testRef);
+                }
+                
+                setConnectionStatus('online', 'Online');
+            } catch (error) {
+                console.log('Firebase connection test failed:', error);
+                setConnectionStatus('offline', 'Offline');
+            }
+        }
+        
+        function setConnectionStatus(status, text) {
+            connectionIndicator.className = `connection-indicator ${status}`;
+            connectionText.textContent = text;
+            
+            // Add Myanmar translation
+            if (text === 'Online') {
+                connectionText.textContent = 'အွန်လိုင်း';
+            } else if (text === 'Offline') {
+                connectionText.textContent = 'အော့ဖ်လိုင်း';
+            } else if (text === 'Syncing...') {
+                connectionText.textContent = 'ချိတ်ဆက်နေသည်...';
+            }
+        }
+        
+        // Initialize theme on page load
+        initTheme();
+        
+        // Initialize connection monitoring
+        initConnectionMonitoring();
+
+
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button or notification
+            const installBtn = document.createElement('button');
+            installBtn.textContent = '📱 Install App';
+            installBtn.className = 'office-button fixed bottom-4 left-4 z-50';
+            installBtn.addEventListener('click', () => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    deferredPrompt = null;
+                    installBtn.remove();
+                });
+            });
+            document.body.appendChild(installBtn);
+        });
+
+        // Handle PWA shortcuts
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+            
+            if (action === 'add-voucher') {
+                // Scroll to voucher form
+                setTimeout(() => {
+                    document.getElementById('addVoucherForm').scrollIntoView({ behavior: 'smooth' });
+                }, 1000);
+            } else if (action === 'analytics') {
+                // Open analytics section
+                setTimeout(() => {
+                    analyticsSection.classList.remove('hidden-section');
+                    toggleAnalyticsBtn.textContent = '📊 Analytics ပိတ်ရန်';
+                    loadAnalytics();
+                    analyticsSection.scrollIntoView({ behavior: 'smooth' });
+                }, 1000);
+            }
+        });
+
+    </script>
+</body>
+</html>

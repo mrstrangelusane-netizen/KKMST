@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Screen Stock Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Debug Info -->
+    <div id="debugInfo" class="fixed top-0 left-0 bg-black text-white p-2 text-xs z-50">
+        Loading...
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Phone Stock Control</h1>
+                <p class="text-gray-600">Professional inventory management for phone screens</p>
+            </div>
+            
+            <button onclick="testApp()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center mb-4">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Start Using App
+            </button>
+            
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-500">Local storage - no login required</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <h1 class="text-xl font-semibold text-gray-900">Phone Stock Control</h1>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <button onclick="showAddItemModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
+                            Add Stock
+                        </button>
+                        <button onclick="exportData()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
+                            Export
+                        </button>
+                        <button onclick="resetApp()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Items</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="totalItems">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-green-100 rounded-lg">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">In Stock</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="inStockItems">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-yellow-100 rounded-lg">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Low Stock</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="lowStockItems">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-red-100 rounded-lg">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Out of Stock</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="outOfStockItems">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="bg-white rounded-lg shadow p-6 mb-8">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <input type="text" id="searchInput" placeholder="Search by model, brand, or SKU..." 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <select id="brandFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">All Brands</option>
+                        <option value="iPhone">iPhone</option>
+                        <option value="Oppo">Oppo</option>
+                        <option value="Vivo">Vivo</option>
+                        <option value="Redmi">Redmi</option>
+                        <option value="Huawei/Honor">Huawei/Honor</option>
+                        <option value="Tecno">Tecno</option>
+                    </select>
+                    <select id="stockFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">All Stock Levels</option>
+                        <option value="in-stock">In Stock</option>
+                        <option value="low-stock">Low Stock</option>
+                        <option value="out-of-stock">Out of Stock</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Stock Items Table -->
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">Stock Items</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost Price</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Selling Price</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stockTableBody" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+                                    No stock items found. Click "Add Stock" to get started.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div id="addItemModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Add New Stock Item</h3>
+                </div>
+                <form id="addItemForm" class="p-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+                            <select id="itemBrand" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">Select Brand</option>
+                                <option value="iPhone">iPhone</option>
+                                <option value="Oppo">Oppo</option>
+                                <option value="Vivo">Vivo</option>
+                                <option value="Redmi">Redmi</option>
+                                <option value="Huawei/Honor">Huawei/Honor</option>
+                                <option value="Tecno">Tecno</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Model</label>
+                            <select id="itemModel" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">Select Model</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">SKU</label>
+                            <input type="text" id="itemSKU" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., IPH15PM-BLK">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                            <input type="number" id="itemQuantity" required min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Cost Price (¥)</label>
+                            <input type="number" id="itemCostPrice" required min="0" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Selling Price (¥)</label>
+                            <input type="number" id="itemSellingPrice" required min="0" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="itemDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Additional notes..."></textarea>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="hideAddItemModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-200">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
+                            Add Item
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update debug info
+        function updateDebug(message) {
+            document.getElementById('debugInfo').textContent = message;
+            console.log(message);
+        }
+
+        // Global variables
+        let stockItems = [];
+        let filteredItems = [];
+
+        // Phone brands and models data
+        const phoneData = {
+            iPhone: [
+                'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15',
+                'iPhone 14 Pro Max', 'iPhone 14 Pro', 'iPhone 14 Plus', 'iPhone 14',
+                'iPhone 13 Pro Max', 'iPhone 13 Pro', 'iPhone 13 Mini', 'iPhone 13',
+                'iPhone 12 Pro Max', 'iPhone 12 Pro', 'iPhone 12 Mini', 'iPhone 12',
+                'iPhone 11 Pro Max', 'iPhone 11 Pro', 'iPhone 11', 'iPhone XS Max',
+                'iPhone XS', 'iPhone XR', 'iPhone X', 'iPhone 8 Plus', 'iPhone 8'
+            ],
+            Oppo: [
+                'Find X6 Pro', 'Find X6', 'Reno 10 Pro', 'Reno 10', 'Reno 9 Pro',
+                'Reno 9', 'A98', 'A78', 'A58', 'A38', 'A18', 'F23', 'F21 Pro'
+            ],
+            Vivo: [
+                'X100 Pro', 'X100', 'V29 Pro', 'V29', 'V27 Pro', 'V27',
+                'Y100', 'Y78', 'Y36', 'Y27', 'Y17', 'T2 Pro', 'T2'
+            ],
+            Redmi: [
+                'Redmi Note 13 Pro', 'Redmi Note 13', 'Redmi Note 12 Pro',
+                'Redmi Note 12', 'Redmi 12', 'Redmi 11', 'Redmi 10',
+                'Redmi 9', 'Redmi 8', 'Redmi 7'
+            ],
+            'Huawei/Honor': [
+                'Honor Magic 6 Pro', 'Honor Magic 6', 'Honor 90 Pro', 'Honor 90',
+                'Honor 80 Pro', 'Honor 80', 'Honor 70', 'Honor 50',
+                'Huawei P60 Pro', 'Huawei P60', 'Huawei Mate 60 Pro', 'Huawei Mate 60'
+            ],
+            Tecno: [
+                'Camon 20 Pro', 'Camon 20', 'Spark 10 Pro', 'Spark 10',
+                'Pova 5 Pro', 'Pova 5', 'Phantom V Fold', 'Phantom X2 Pro'
+            ]
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDebug("App loaded successfully!");
+            loadStockItems();
+        });
+
+        function testApp() {
+            updateDebug("Starting app...");
+            showMainApp();
+            loadStockItems();
+        }
+
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            updateDebug("Main app shown");
+            
+            // Add event listeners
+            document.getElementById('searchInput').addEventListener('input', filterItems);
+            document.getElementById('brandFilter').addEventListener('change', filterItems);
+            document.getElementById('stockFilter').addEventListener('change', filterItems);
+            document.getElementById('itemBrand').addEventListener('change', updateModelOptions);
+            document.getElementById('addItemForm').addEventListener('submit', addStockItem);
+        }
+
+        function updateModelOptions() {
+            const brand = document.getElementById('itemBrand').value;
+            const modelSelect = document.getElementById('itemModel');
+            
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+            
+            if (brand && phoneData[brand]) {
+                phoneData[brand].forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+            }
+        }
+
+        function showAddItemModal() {
+            document.getElementById('addItemModal').classList.remove('hidden');
+        }
+
+        function hideAddItemModal() {
+            document.getElementById('addItemModal').classList.add('hidden');
+            document.getElementById('addItemForm').reset();
+        }
+
+        function addStockItem(e) {
+            e.preventDefault();
+            
+            const formData = {
+                id: Date.now().toString(),
+                brand: document.getElementById('itemBrand').value,
+                model: document.getElementById('itemModel').value,
+                sku: document.getElementById('itemSKU').value,
+                quantity: parseInt(document.getElementById('itemQuantity').value),
+                costPrice: parseFloat(document.getElementById('itemCostPrice').value),
+                sellingPrice: parseFloat(document.getElementById('itemSellingPrice').value),
+                description: document.getElementById('itemDescription').value,
+                createdAt: new Date()
+            };
+
+            stockItems.unshift(formData);
+            saveStockItems();
+            hideAddItemModal();
+            loadStockItems();
+            showMessage('Stock item added successfully!', false);
+            updateDebug("Stock item added: " + formData.sku);
+        }
+
+        function loadStockItems() {
+            try {
+                const saved = localStorage.getItem('phoneStockItems');
+                if (saved) {
+                    stockItems = JSON.parse(saved);
+                } else {
+                    stockItems = [];
+                }
+                
+                filteredItems = [...stockItems];
+                updateStats();
+                renderStockTable();
+                updateDebug("Stock items loaded: " + stockItems.length + " items");
+            } catch (error) {
+                updateDebug("Error loading items: " + error.message);
+                console.error('Error loading items:', error);
+                showMessage('Error loading stock items.', true);
+            }
+        }
+
+        function saveStockItems() {
+            try {
+                localStorage.setItem('phoneStockItems', JSON.stringify(stockItems));
+                updateDebug("Stock items saved to localStorage");
+            } catch (error) {
+                updateDebug("Error saving items: " + error.message);
+                console.error('Error saving items:', error);
+            }
+        }
+
+        function updateStats() {
+            const totalItems = stockItems.length;
+            const inStockItems = stockItems.filter(item => item.quantity > 10).length;
+            const lowStockItems = stockItems.filter(item => item.quantity > 0 && item.quantity <= 10).length;
+            const outOfStockItems = stockItems.filter(item => item.quantity === 0).length;
+
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('inStockItems').textContent = inStockItems;
+            document.getElementById('lowStockItems').textContent = lowStockItems;
+            document.getElementById('outOfStockItems').textContent = outOfStockItems;
+        }
+
+        function filterItems() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const brandFilter = document.getElementById('brandFilter').value;
+            const stockFilter = document.getElementById('stockFilter').value;
+
+            filteredItems = stockItems.filter(item => {
+                const matchesSearch = !searchTerm || 
+                    item.model.toLowerCase().includes(searchTerm) ||
+                    item.brand.toLowerCase().includes(searchTerm) ||
+                    item.sku.toLowerCase().includes(searchTerm);
+                
+                const matchesBrand = !brandFilter || item.brand === brandFilter;
+                
+                let matchesStock = true;
+                if (stockFilter === 'in-stock') {
+                    matchesStock = item.quantity > 10;
+                } else if (stockFilter === 'low-stock') {
+                    matchesStock = item.quantity > 0 && item.quantity <= 10;
+                } else if (stockFilter === 'out-of-stock') {
+                    matchesStock = item.quantity === 0;
+                }
+
+                return matchesSearch && matchesBrand && matchesStock;
+            });
+
+            renderStockTable();
+        }
+
+        function renderStockTable() {
+            const tbody = document.getElementById('stockTableBody');
+            tbody.innerHTML = '';
+
+            if (filteredItems.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+                            No stock items found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filteredItems.forEach(item => {
+                const status = getStockStatus(item.quantity);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.brand}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.model}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.sku}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.quantity}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">¥${item.costPrice.toLocaleString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">¥${item.sellingPrice.toLocaleString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${status.class}">
+                            ${status.text}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="editItem('${item.id}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                        <button onclick="deleteItem('${item.id}')" class="text-red-600 hover:text-red-900">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function getStockStatus(quantity) {
+            if (quantity === 0) {
+                return { text: 'Out of Stock', class: 'bg-red-100 text-red-800' };
+            } else if (quantity <= 10) {
+                return { text: 'Low Stock', class: 'bg-yellow-100 text-yellow-800' };
+            } else {
+                return { text: 'In Stock', class: 'bg-green-100 text-green-800' };
+            }
+        }
+
+        function editItem(itemId) {
+            const item = stockItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            const newQuantity = prompt(`Current quantity: ${item.quantity}\nEnter new quantity:`, item.quantity);
+            if (newQuantity === null || newQuantity === '') return;
+
+            const quantity = parseInt(newQuantity);
+            if (isNaN(quantity) || quantity < 0) {
+                showMessage('Please enter a valid quantity.', true);
+                return;
+            }
+
+            item.quantity = quantity;
+            saveStockItems();
+            loadStockItems();
+            showMessage('Item updated successfully!', false);
+            updateDebug("Item updated: " + item.sku);
+        }
+
+        function deleteItem(itemId) {
+            if (!confirm('Are you sure you want to delete this item?')) return;
+
+            const itemIndex = stockItems.findIndex(i => i.id === itemId);
+            if (itemIndex !== -1) {
+                stockItems.splice(itemIndex, 1);
+                saveStockItems();
+                loadStockItems();
+                showMessage('Item deleted successfully!', false);
+                updateDebug("Item deleted");
+            }
+        }
+
+        function exportData() {
+            try {
+                const dataStr = JSON.stringify(stockItems, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'phone-stock-backup.json';
+                link.click();
+                URL.revokeObjectURL(url);
+                showMessage('Data exported successfully!', false);
+                updateDebug("Data exported");
+            } catch (error) {
+                showMessage('Error exporting data.', true);
+                updateDebug("Export error: " + error.message);
+            }
+        }
+
+        function resetApp() {
+            if (!confirm('Are you sure you want to reset all data? This cannot be undone.')) return;
+            
+            stockItems = [];
+            localStorage.removeItem('phoneStockItems');
+            loadStockItems();
+            showMessage('App reset successfully!', false);
+            updateDebug("App reset");
+        }
+
+        function showMessage(message, isError = false) {
+            // Create a simple toast notification
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+                isError ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+            }`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+
