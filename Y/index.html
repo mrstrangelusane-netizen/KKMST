@@ -494,8 +494,15 @@
             </div>
 
             <!-- Vouchers Table -->
-            <div class="flex items-center justify-end mb-2">
-                <input id="voucherSearchInput" type="text" placeholder="Voucher Number ဖြင့် ရှာရန် (Enter နှိပ်ပါ)" class="office-input p-2 w-full sm:w-1/2 md:w-1/3">
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center space-x-4">
+                    <input id="voucherSearchInput" type="text" placeholder="Voucher Number ဖြင့် ရှာရန် (Enter နှိပ်ပါ)" class="office-input p-2 w-full sm:w-1/2 md:w-1/3">
+                    <select id="statusFilterSelect" class="office-input p-2">
+                        <option value="all">All Status</option>
+                        <option value="taken">Taken Only</option>
+                        <option value="not_taken">Not Taken Only</option>
+                    </select>
+                </div>
             </div>
             <div class="overflow-x-auto rounded-lg theme-border border">
                 <table class="w-full text-left table-auto">
@@ -705,6 +712,12 @@
                 <button id="statusReportBtn" class="w-full office-button mt-4">
                     📊 Status Report (Taken/Not Taken)
                 </button>
+                <button id="toggleStatusReportBtn" class="w-full office-button mt-2 hidden">
+                    📊 Status Report ပိတ်ရန်
+                </button>
+                <button id="exportStatusReportBtn" class="w-full excel-button mt-4 hidden">
+                    📊 Export Status Report to Excel
+                </button>
                 <div id="statusReportDisplay" class="hidden mt-4">
                     <!-- Status report will be displayed here -->
                 </div>
@@ -784,7 +797,7 @@
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { 
       getFirestore, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, 
-      collection, query, where, getDocs, getDoc, setLogLevel
+      collection, query, where, getDocs, getDoc, setLogLevel, orderBy
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     setLogLevel('debug');
@@ -834,6 +847,8 @@
         const exportByTechnicianBtn = document.getElementById('exportByTechnicianBtn');
         const statusReportBtn = document.getElementById('statusReportBtn');
         const statusReportDisplay = document.getElementById('statusReportDisplay');
+        const exportStatusReportBtn = document.getElementById('exportStatusReportBtn');
+        const toggleStatusReportBtn = document.getElementById('toggleStatusReportBtn');
         const toggleManagementBtn = document.getElementById('toggleManagementBtn');
         const technicianManagementControls = document.getElementById('technicianManagementControls');
         const newTechnicianNameInput = document.getElementById('newTechnicianName');
@@ -846,6 +861,7 @@
         const userEmailDisplay = document.getElementById('userEmail');
         const logoutBtn = document.getElementById('logoutBtn');
         const voucherSearchInput = document.getElementById('voucherSearchInput');
+        const statusFilterSelect = document.getElementById('statusFilterSelect');
         
         // New elements for analytics and backup
         const toggleAnalyticsBtn = document.getElementById('toggleAnalyticsBtn');
@@ -935,11 +951,16 @@
         let voucherCache = new Map(); // Cache for vouchers
         let searchTimeout = null; // For debouncing
         let lastSearchQuery = ''; // To avoid duplicate searches
+        let statusFilter = 'all'; // Current status filter
         
         // Autosave variables
         let autosaveEnabled = false;
         let autosaveInterval = null;
         let autosaveIntervalTime = 60 * 60 * 1000; // 1 hour in milliseconds
+        
+        // Status report variables
+        let currentStatusReportData = null;
+        let currentStatusReportParams = null;
         
         // Payroll system variables
         let payrollSettings = {
@@ -1136,6 +1157,18 @@
             });
         }
 
+        // Status filter functionality
+        if (statusFilterSelect) {
+            statusFilterSelect.addEventListener('change', (event) => {
+                statusFilter = event.target.value;
+                // Re-render the current view with the new filter
+                if (isSearchMode) {
+                    displaySearchResults();
+                } else {
+                    renderDailyVouchers();
+                }
+            });
+        }
 
         // Function to perform voucher search across all vouchers
         async function performVoucherSearch() {
@@ -1225,12 +1258,19 @@
             actionHeader.textContent = 'Technician & Date';
             
             voucherTableBody.innerHTML = '';
-            if (searchResults.length === 0) {
+            
+            // Apply status filter to search results
+            let filteredResults = searchResults;
+            if (statusFilter !== 'all') {
+                filteredResults = searchResults.filter(voucher => voucher.voucherStatus === statusFilter);
+            }
+            
+            if (filteredResults.length === 0) {
                 voucherTableBody.innerHTML = '<tr><td colspan="9" class="py-3 text-center text-gray-400">ရှာဖွေမှုရလဒ် မရှိပါ</td></tr>';
                 return;
             }
 
-            searchResults.forEach((voucher, index) => {
+            filteredResults.forEach((voucher, index) => {
                 const row = document.createElement('tr');
                 row.className = 'border-b border-gray-700 hover:bg-gray-700 transition-colors duration-150';
                 const statusText = voucher.voucherStatus === 'taken' ? 'Taken' : 'Not Taken';
@@ -1259,7 +1299,7 @@
             });
 
             // Update daily total to show search results total
-            const totalAmount = searchResults.reduce((sum, v) => sum + (Number(v.amount) || 0), 0);
+            const totalAmount = filteredResults.reduce((sum, v) => sum + (Number(v.amount) || 0), 0);
             dailyTotalDisplay.textContent = `Search Total: ${totalAmount.toLocaleString()} ¥`;
         }
 
@@ -1785,6 +1825,12 @@
                 const q = voucherSearchQuery.toLowerCase();
                 filtered = filtered.filter(v => (v.voucherNumber || '').toString().toLowerCase().includes(q));
             }
+
+            // Apply status filter
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(v => v.voucherStatus === statusFilter);
+            }
+
             const totalAmount = filtered.reduce((sum, v) => sum + (Number(v.amount) || 0), 0);
             displayVouchers(filtered);
             dailyTotalDisplay.textContent = `${totalAmount.toLocaleString()} ¥`;
@@ -2427,6 +2473,13 @@
 
         function displayStatusReport(vouchers, startDate, endDate, selectedTechnician) {
             statusReportDisplay.classList.remove('hidden');
+            exportStatusReportBtn.classList.remove('hidden');
+            toggleStatusReportBtn.classList.remove('hidden');
+            statusReportBtn.classList.add('hidden');
+            
+            // Store data for export
+            currentStatusReportData = vouchers;
+            currentStatusReportParams = { startDate, endDate, selectedTechnician };
             
             // Calculate status statistics
             const totalVouchers = vouchers.length;
@@ -2518,6 +2571,136 @@
                 </div>
             `;
         }
+
+        // Export Status Report to Excel
+        exportStatusReportBtn.addEventListener('click', async () => {
+            if (!currentStatusReportData || !currentStatusReportParams) {
+                showMessage("ကျေးဇူးပြု၍ ပထမဦးစွာ Status Report ကို ထုတ်ယူပါ", true);
+                return;
+            }
+
+            try {
+                const XLSX = window.XLSX;
+                if (!XLSX) {
+                    showMessage("Excel library မရှိပါ။ ကျေးဇူးပြု၍ စာမျက်နှာကို ပြန်လည်စတင်ပါ", true);
+                    return;
+                }
+
+                const { startDate, endDate, selectedTechnician } = currentStatusReportParams;
+                const vouchers = currentStatusReportData;
+
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+
+                // Summary Sheet
+                const summaryData = [
+                    ['Status Report Summary'],
+                    ['Date Range', `${startDate} to ${endDate}`],
+                    ['Technician', selectedTechnician === 'all' ? 'All Technicians' : selectedTechnician],
+                    [''],
+                    ['Overall Statistics'],
+                    ['Metric', 'Count', 'Amount (¥)', 'Percentage'],
+                    ['Total Vouchers', vouchers.length, vouchers.reduce((sum, v) => sum + (Number(v.amount) || 0), 0), '100%'],
+                    ['Taken Vouchers', vouchers.filter(v => v.voucherStatus === 'taken').length, vouchers.filter(v => v.voucherStatus === 'taken').reduce((sum, v) => sum + (Number(v.amount) || 0), 0), `${vouchers.length > 0 ? ((vouchers.filter(v => v.voucherStatus === 'taken').length / vouchers.length) * 100).toFixed(1) : 0}%`],
+                    ['Not Taken Vouchers', vouchers.filter(v => v.voucherStatus === 'not_taken').length, vouchers.filter(v => v.voucherStatus === 'not_taken').reduce((sum, v) => sum + (Number(v.amount) || 0), 0), `${vouchers.length > 0 ? ((vouchers.filter(v => v.voucherStatus === 'not_taken').length / vouchers.length) * 100).toFixed(1) : 0}%`],
+                    [''],
+                    ['Completion Rate', `${vouchers.length > 0 ? ((vouchers.filter(v => v.voucherStatus === 'taken').length / vouchers.length) * 100).toFixed(1) : 0}%`, '', '']
+                ];
+
+                const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
+                XLSX.utils.book_append_sheet(wb, summaryWs, 'Summary');
+
+                // Technician Breakdown Sheet
+                const technicianStats = {};
+                vouchers.forEach(voucher => {
+                    const tech = voucher.technicianName || 'Unknown';
+                    if (!technicianStats[tech]) {
+                        technicianStats[tech] = {
+                            total: 0,
+                            taken: 0,
+                            notTaken: 0,
+                            takenAmount: 0,
+                            notTakenAmount: 0
+                        };
+                    }
+                    technicianStats[tech].total++;
+                    if (voucher.voucherStatus === 'taken') {
+                        technicianStats[tech].taken++;
+                        technicianStats[tech].takenAmount += Number(voucher.amount) || 0;
+                    } else {
+                        technicianStats[tech].notTaken++;
+                        technicianStats[tech].notTakenAmount += Number(voucher.amount) || 0;
+                    }
+                });
+
+                const technicianData = [
+                    ['Technician Breakdown'],
+                    [''],
+                    ['Technician', 'Total Vouchers', 'Taken Count', 'Taken Amount (¥)', 'Not Taken Count', 'Not Taken Amount (¥)', 'Completion Rate (%)']
+                ];
+
+                Object.entries(technicianStats).forEach(([tech, stats]) => {
+                    const completionRate = stats.total > 0 ? ((stats.taken / stats.total) * 100).toFixed(1) : 0;
+                    technicianData.push([
+                        tech,
+                        stats.total,
+                        stats.taken,
+                        stats.takenAmount,
+                        stats.notTaken,
+                        stats.notTakenAmount,
+                        completionRate
+                    ]);
+                });
+
+                const technicianWs = XLSX.utils.aoa_to_sheet(technicianData);
+                XLSX.utils.book_append_sheet(wb, technicianWs, 'Technician Breakdown');
+
+                // Detailed Vouchers Sheet
+                const voucherData = [
+                    ['Detailed Voucher Data'],
+                    [''],
+                    ['Date', 'Technician', 'Customer Name', 'Phone Model', 'Phone Color', 'Error', 'Voucher Number', 'Status', 'Amount (¥)']
+                ];
+
+                vouchers.forEach(voucher => {
+                    const statusText = voucher.voucherStatus === 'taken' ? 'Taken' : 'Not Taken';
+                    voucherData.push([
+                        voucher.date || '',
+                        voucher.technicianName || 'Unknown',
+                        voucher.customerName || '',
+                        voucher.phoneModel || '',
+                        voucher.phoneColor || '',
+                        voucher.error || '',
+                        voucher.voucherNumber || '',
+                        statusText,
+                        Number(voucher.amount) || 0
+                    ]);
+                });
+
+                const voucherWs = XLSX.utils.aoa_to_sheet(voucherData);
+                XLSX.utils.book_append_sheet(wb, voucherWs, 'Voucher Details');
+
+                // Export file
+                const fileName = `status_report_${startDate}_to_${endDate}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+                showMessage("Status Report Excel ဖိုင် ထုတ်ယူပြီးပါပြီ။");
+            } catch (error) {
+                showMessage(`Error exporting status report: ${error.message}`, true);
+                console.error("Error exporting status report: ", error);
+            }
+        });
+
+        // Toggle Status Report functionality
+        toggleStatusReportBtn.addEventListener('click', () => {
+            statusReportDisplay.classList.add('hidden');
+            exportStatusReportBtn.classList.add('hidden');
+            toggleStatusReportBtn.classList.add('hidden');
+            statusReportBtn.classList.remove('hidden');
+            
+            // Clear stored data
+            currentStatusReportData = null;
+            currentStatusReportParams = null;
+        });
 
         // Theme Toggle Functionality
         function initTheme() {
