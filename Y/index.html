@@ -479,6 +479,13 @@
                             <label for="voucherNumber" class="block text-sm theme-text-secondary mb-1">Voucher Number</label>
                             <input type="text" id="voucherNumber" placeholder="Voucher Number" class="office-input p-3 w-full">
                         </div>
+                        <div>
+                            <label for="voucherStatus" class="block text-sm theme-text-secondary mb-1">Status</label>
+                            <select id="voucherStatus" class="office-input p-3 w-full">
+                                <option value="not_taken">Not Taken</option>
+                                <option value="taken">Taken</option>
+                            </select>
+                        </div>
                     </div>
                     <button type="submit" class="w-full office-button py-3 px-6">
                         voucher ထည့်သွင်းရန်
@@ -500,6 +507,7 @@
                             <th class="py-3 px-6 text-left">Phone Color</th>
                             <th class="py-3 px-6 text-left">Error</th>
                             <th class="py-3 px-6 text-left">Voucher Number</th>
+                            <th class="py-3 px-6 text-left">Status</th>
                             <th class="py-3 px-6 text-left">ပမာဏ (¥)</th>
                             <th class="py-3 px-6 text-left" id="actionHeader">လုပ်ဆောင်ချက်</th>
                         </tr>
@@ -694,6 +702,12 @@
                 <button id="exportByTechnicianBtn" class="w-full excel-button mt-4">
                     Technician အလိုက် Excel (XLSX) Export
                 </button>
+                <button id="statusReportBtn" class="w-full office-button mt-4">
+                    📊 Status Report (Taken/Not Taken)
+                </button>
+                <div id="statusReportDisplay" class="hidden mt-4">
+                    <!-- Status report will be displayed here -->
+                </div>
             </div>
         </div>
 
@@ -807,6 +821,7 @@
         const phoneColorInput = document.getElementById('phoneColor');
         const errorInput = document.getElementById('error');
         const voucherNumberInput = document.getElementById('voucherNumber');
+        const voucherStatusInput = document.getElementById('voucherStatus');
         const amountInput = document.getElementById('amount');
         const voucherTableBody = document.getElementById('voucherTableBody');
         const dailyTotalDisplay = document.getElementById('dailyTotal');
@@ -817,6 +832,8 @@
         const rangeTotalsDisplay = document.getElementById('rangeTotalsDisplay');
         const exportRangeBtn = document.getElementById('exportRangeBtn');
         const exportByTechnicianBtn = document.getElementById('exportByTechnicianBtn');
+        const statusReportBtn = document.getElementById('statusReportBtn');
+        const statusReportDisplay = document.getElementById('statusReportDisplay');
         const toggleManagementBtn = document.getElementById('toggleManagementBtn');
         const technicianManagementControls = document.getElementById('technicianManagementControls');
         const newTechnicianNameInput = document.getElementById('newTechnicianName');
@@ -1209,13 +1226,15 @@
             
             voucherTableBody.innerHTML = '';
             if (searchResults.length === 0) {
-                voucherTableBody.innerHTML = '<tr><td colspan="8" class="py-3 text-center text-gray-400">ရှာဖွေမှုရလဒ် မရှိပါ</td></tr>';
+                voucherTableBody.innerHTML = '<tr><td colspan="9" class="py-3 text-center text-gray-400">ရှာဖွေမှုရလဒ် မရှိပါ</td></tr>';
                 return;
             }
 
             searchResults.forEach((voucher, index) => {
                 const row = document.createElement('tr');
                 row.className = 'border-b border-gray-700 hover:bg-gray-700 transition-colors duration-150';
+                const statusText = voucher.voucherStatus === 'taken' ? 'Taken' : 'Not Taken';
+                const statusColor = voucher.voucherStatus === 'taken' ? 'text-green-400' : 'text-yellow-400';
                 row.innerHTML = `
                     <td class="py-3 px-6 text-left whitespace-nowrap">${index + 1}</td>
                     <td class="py-3 px-6 text-left">${voucher.customerName}</td>
@@ -1223,6 +1242,12 @@
                     <td class="py-3 px-6 text-left">${voucher.phoneColor}</td>
                     <td class="py-3 px-6 text-left">${voucher.error}</td>
                     <td class="py-3 px-6 text-left font-semibold text-teal-400">${voucher.voucherNumber}</td>
+                    <td class="py-3 px-6 text-left">
+                        <select class="status-select bg-gray-800 text-white border border-gray-600 rounded px-2 py-1 text-sm" data-voucher-id="${voucher.id}">
+                            <option value="not_taken" ${voucher.voucherStatus === 'not_taken' ? 'selected' : ''}>Not Taken</option>
+                            <option value="taken" ${voucher.voucherStatus === 'taken' ? 'selected' : ''}>Taken</option>
+                        </select>
+                    </td>
                     <td class="py-3 px-6 text-left">${(Number(voucher.amount) || 0).toLocaleString()} ¥</td>
                     <td class="py-3 px-6 text-left">
                         <span class="text-sm text-gray-300 font-semibold">${voucher.technicianName || 'Unknown'}</span>
@@ -1833,7 +1858,7 @@
             
             voucherTableBody.innerHTML = '';
             if (vouchers.length === 0) {
-                voucherTableBody.innerHTML = '<tr><td colspan="8" class="py-3 text-center text-gray-400">ဤနေ့အတွက် မှတ်တမ်းမရှိပါ</td></tr>';
+                voucherTableBody.innerHTML = '<tr><td colspan="9" class="py-3 text-center text-gray-400">ဤနေ့အတွက် မှတ်တမ်းမရှိပါ</td></tr>';
                 return;
             }
 
@@ -1847,6 +1872,12 @@
                     <td class="py-3 px-6 text-left">${voucher.phoneColor}</td>
                     <td class="py-3 px-6 text-left">${voucher.error}</td>
                     <td class="py-3 px-6 text-left">${voucher.voucherNumber}</td>
+                    <td class="py-3 px-6 text-left">
+                        <select class="status-select bg-gray-800 text-white border border-gray-600 rounded px-2 py-1 text-sm" data-voucher-id="${voucher.id}">
+                            <option value="not_taken" ${voucher.voucherStatus === 'not_taken' ? 'selected' : ''}>Not Taken</option>
+                            <option value="taken" ${voucher.voucherStatus === 'taken' ? 'selected' : ''}>Taken</option>
+                        </select>
+                    </td>
                     <td class="py-3 px-6 text-left">${(Number(voucher.amount) || 0).toLocaleString()} ¥</td>
                     <td class="py-3 px-6 text-left">
                         <button class="edit-voucher-btn bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded-lg text-sm mr-2" data-id="${voucher.id}">
@@ -1860,6 +1891,29 @@
                 voucherTableBody.appendChild(row);
             });
 
+            // Add event listeners for status changes
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.addEventListener('change', async (event) => {
+                    const voucherId = event.target.dataset.voucherId;
+                    const newStatus = event.target.value;
+                    
+                    try {
+                        if (!currentUserId) {
+                            showMessage("ကျေးဇူးပြု၍ အကောင့်ဝင်ပါ", true);
+                            return;
+                        }
+
+                        const voucherRef = doc(db, `artifacts/${appId}/users/${currentUserId}/vouchers/${voucherId}`);
+                        await updateDoc(voucherRef, { voucherStatus: newStatus });
+                        
+                        showMessage("Status updated successfully", false);
+                    } catch (error) {
+                        showMessage(`Error updating status: ${error.message}`, true);
+                        console.error("Error updating voucher status: ", error);
+                    }
+                });
+            });
+
             document.querySelectorAll('.edit-voucher-btn').forEach(button => {
                 button.addEventListener('click', (event) => {
                     const voucherId = event.target.dataset.id;
@@ -1870,20 +1924,22 @@
                     if (row.classList.contains('editing')) return;
                     row.classList.add('editing');
 
-                    // Cells: 0=index, 1=customerName, 2=phoneModel, 3=phoneColor, 4=error, 5=voucherNumber, 6=amount, 7=actions
+                    // Cells: 0=index, 1=customerName, 2=phoneModel, 3=phoneColor, 4=error, 5=voucherNumber, 6=status, 7=amount, 8=actions
                     const customerCell = row.children[1];
                     const modelCell = row.children[2];
                     const colorCell = row.children[3];
                     const errorCell = row.children[4];
                     const voucherNoCell = row.children[5];
-                    const amountCell = row.children[6];
-                    const actionsCell = row.children[7];
+                    const statusCell = row.children[6];
+                    const amountCell = row.children[7];
+                    const actionsCell = row.children[8];
 
                     const customerVal = customerCell.textContent.trim();
                     const modelVal = modelCell.textContent.trim();
                     const colorVal = colorCell.textContent.trim();
                     const errorVal = errorCell.textContent.trim();
                     const voucherNoVal = voucherNoCell.textContent.trim();
+                    const statusVal = statusCell.querySelector('select') ? statusCell.querySelector('select').value : 'not_taken';
                     const amountText = amountCell.textContent.replace(/[^0-9.\-]/g, '').trim();
 
                     customerCell.innerHTML = `<input type="text" class="bg-gray-600 p-1 rounded w-full" value="${customerVal}">`;
@@ -1891,6 +1947,12 @@
                     colorCell.innerHTML = `<input type="text" class="bg-gray-600 p-1 rounded w-full" value="${colorVal}">`;
                     errorCell.innerHTML = `<input type="text" class="bg-gray-600 p-1 rounded w-full" value="${errorVal}">`;
                     voucherNoCell.innerHTML = `<input type="text" class="bg-gray-600 p-1 rounded w-full" value="${voucherNoVal}">`;
+                    statusCell.innerHTML = `
+                        <select class="bg-gray-600 p-1 rounded w-full text-white">
+                            <option value="not_taken" ${statusVal === 'not_taken' ? 'selected' : ''}>Not Taken</option>
+                            <option value="taken" ${statusVal === 'taken' ? 'selected' : ''}>Taken</option>
+                        </select>
+                    `;
                     amountCell.innerHTML = `<input type="number" step="0.01" class="bg-gray-600 p-1 rounded w-full text-right" value="${amountText}">`;
 
                     actionsCell.innerHTML = `
@@ -1906,7 +1968,8 @@
                             phoneColor: rowEl.children[3].querySelector('input').value.trim(),
                             error: rowEl.children[4].querySelector('input').value.trim(),
                             voucherNumber: rowEl.children[5].querySelector('input').value.trim(),
-                            amount: parseFloat(rowEl.children[6].querySelector('input').value)
+                            voucherStatus: rowEl.children[6].querySelector('select').value,
+                            amount: parseFloat(rowEl.children[7].querySelector('input').value)
                         };
 
                         if (!updated.customerName || !updated.phoneModel || !updated.error || !updated.voucherNumber || isNaN(updated.amount) || updated.amount <= 0) {
@@ -2004,6 +2067,7 @@
             const phoneColor = phoneColorInput.value.trim();
             const error = errorInput.value.trim();
             const voucherNumber = voucherNumberInput.value.trim();
+            const voucherStatus = voucherStatusInput.value;
             const amount = parseFloat(amountInput.value);
             const date = datePicker.value;
 
@@ -2019,6 +2083,7 @@
                     phoneColor,
                     error,
                     voucherNumber,
+                    voucherStatus,
                     amount,
                     date,
                     technicianName: selectedTechnician,
@@ -2159,10 +2224,10 @@
 
                 // Create Excel content
                 let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // BOM for UTF-8
-                csvContent += "ရက်စွဲ,Technician,Customer Name,Phone Model,Phone Color,Error,Voucher Number,Amount\n";
+                csvContent += "ရက်စွဲ,Technician,Customer Name,Phone Model,Phone Color,Error,Voucher Number,Status,Amount\n";
                 
                 vouchers.forEach(voucher => {
-                    csvContent += `${safeCSV(voucher.date)},${safeCSV(voucher.technicianName)},${safeCSV(voucher.customerName)},${safeCSV(voucher.phoneModel)},${safeCSV(voucher.phoneColor)},${safeCSV(voucher.error)},${safeCSV(voucher.voucherNumber)},${safeCSV(voucher.amount)}\n`;
+                    csvContent += `${safeCSV(voucher.date)},${safeCSV(voucher.technicianName)},${safeCSV(voucher.customerName)},${safeCSV(voucher.phoneModel)},${safeCSV(voucher.phoneColor)},${safeCSV(voucher.error)},${safeCSV(voucher.voucherNumber)},${safeCSV(voucher.voucherStatus || 'not_taken')},${safeCSV(voucher.amount)}\n`;
                 });
 
                 // Create download link
@@ -2313,6 +2378,146 @@
                  console.error("Error exporting data: ", error);
              }
          });
+
+        // Status Report functionality
+        statusReportBtn.addEventListener('click', async () => {
+            const startDate = startDatePicker.value;
+            const endDate = endDatePicker.value;
+            const selectedTechnician = rangeTechnicianSelect.value;
+
+            if (!startDate || !endDate) {
+                showMessage("ကျေးဇူးပြု၍ စတင်ရက်စွဲနှင့် ပြီးဆုံးရက်စွဲ ရွေးချယ်ပါ", true);
+                return;
+            }
+
+            try {
+                if (!currentUserId) {
+                    showMessage("ကျေးဇူးပြု၍ အကောင့်ဝင်ပါ", true);
+                    return;
+                }
+
+                const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                const q = query(
+                    vouchersCollection,
+                    where('date', '>=', startDate),
+                    where('date', '<=', endDate),
+                    orderBy('date', 'asc')
+                );
+
+                const querySnapshot = await getDocs(q);
+                let vouchers = [];
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    // If a specific technician is selected, only include their vouchers
+                    if (selectedTechnician === 'all' || data.technicianName === selectedTechnician) {
+                        vouchers.push({
+                            id: doc.id,
+                            ...data
+                        });
+                    }
+                });
+
+                displayStatusReport(vouchers, startDate, endDate, selectedTechnician);
+            } catch (error) {
+                showMessage(`Error generating status report: ${error.message}`, true);
+                console.error("Error getting status report: ", error);
+            }
+        });
+
+        function displayStatusReport(vouchers, startDate, endDate, selectedTechnician) {
+            statusReportDisplay.classList.remove('hidden');
+            
+            // Calculate status statistics
+            const totalVouchers = vouchers.length;
+            const takenVouchers = vouchers.filter(v => v.voucherStatus === 'taken').length;
+            const notTakenVouchers = vouchers.filter(v => v.voucherStatus === 'not_taken').length;
+            const takenAmount = vouchers.filter(v => v.voucherStatus === 'taken').reduce((sum, v) => sum + (Number(v.amount) || 0), 0);
+            const notTakenAmount = vouchers.filter(v => v.voucherStatus === 'not_taken').reduce((sum, v) => sum + (Number(v.amount) || 0), 0);
+
+            // Group by technician
+            const technicianStats = {};
+            vouchers.forEach(voucher => {
+                const tech = voucher.technicianName || 'Unknown';
+                if (!technicianStats[tech]) {
+                    technicianStats[tech] = {
+                        total: 0,
+                        taken: 0,
+                        notTaken: 0,
+                        takenAmount: 0,
+                        notTakenAmount: 0
+                    };
+                }
+                technicianStats[tech].total++;
+                if (voucher.voucherStatus === 'taken') {
+                    technicianStats[tech].taken++;
+                    technicianStats[tech].takenAmount += Number(voucher.amount) || 0;
+                } else {
+                    technicianStats[tech].notTaken++;
+                    technicianStats[tech].notTakenAmount += Number(voucher.amount) || 0;
+                }
+            });
+
+            const technicianText = selectedTechnician === 'all' ? 'All Technicians' : selectedTechnician;
+            
+            statusReportDisplay.innerHTML = `
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold theme-text-primary mb-4">Status Report: ${startDate} to ${endDate}</h3>
+                    <p class="text-sm text-gray-400 mb-4">Technician: ${technicianText}</p>
+                    
+                    <!-- Overall Statistics -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-green-900 p-4 rounded-lg">
+                            <h4 class="text-lg font-semibold text-green-300 mb-2">✅ Taken Vouchers</h4>
+                            <p class="text-2xl font-bold text-white">${takenVouchers}</p>
+                            <p class="text-sm text-gray-300">Amount: ${takenAmount.toLocaleString()} ¥</p>
+                            <p class="text-sm text-gray-300">Percentage: ${totalVouchers > 0 ? ((takenVouchers / totalVouchers) * 100).toFixed(1) : 0}%</p>
+                        </div>
+                        <div class="bg-yellow-900 p-4 rounded-lg">
+                            <h4 class="text-lg font-semibold text-yellow-300 mb-2">⏳ Not Taken Vouchers</h4>
+                            <p class="text-2xl font-bold text-white">${notTakenVouchers}</p>
+                            <p class="text-sm text-gray-300">Amount: ${notTakenAmount.toLocaleString()} ¥</p>
+                            <p class="text-sm text-gray-300">Percentage: ${totalVouchers > 0 ? ((notTakenVouchers / totalVouchers) * 100).toFixed(1) : 0}%</p>
+                        </div>
+                    </div>
+
+                    <!-- Technician Breakdown -->
+                    <div class="mb-4">
+                        <h4 class="text-lg font-semibold theme-text-primary mb-3">Technician Breakdown</h4>
+                        <div class="space-y-3">
+                            ${Object.entries(technicianStats).map(([tech, stats]) => `
+                                <div class="bg-gray-700 p-3 rounded-lg">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="font-semibold text-teal-300">${tech}</span>
+                                        <span class="text-sm text-gray-400">Total: ${stats.total} vouchers</span>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span class="text-green-400">✅ Taken: ${stats.taken}</span>
+                                            <br>
+                                            <span class="text-gray-300">${stats.takenAmount.toLocaleString()} ¥</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-yellow-400">⏳ Not Taken: ${stats.notTaken}</span>
+                                            <br>
+                                            <span class="text-gray-300">${stats.notTakenAmount.toLocaleString()} ¥</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <h4 class="text-lg font-semibold theme-text-primary mb-2">Summary</h4>
+                        <p class="text-sm text-gray-300">Total Vouchers: ${totalVouchers}</p>
+                        <p class="text-sm text-gray-300">Total Amount: ${(takenAmount + notTakenAmount).toLocaleString()} ¥</p>
+                        <p class="text-sm text-gray-300">Completion Rate: ${totalVouchers > 0 ? ((takenVouchers / totalVouchers) * 100).toFixed(1) : 0}%</p>
+                    </div>
+                </div>
+            `;
+        }
 
         // Theme Toggle Functionality
         function initTheme() {
@@ -2503,6 +2708,7 @@
                 error: errorInput.value,
                 amount: amountInput.value,
                 voucherNumber: voucherNumberInput.value,
+                voucherStatus: voucherStatusInput.value,
                 timestamp: Date.now()
             };
             
@@ -2537,6 +2743,7 @@
             phoneColorInput.value = '';
             errorInput.value = '';
             voucherNumberInput.value = '';
+            voucherStatusInput.value = 'not_taken';
             amountInput.value = '';
             
             // Clear autosaved data
