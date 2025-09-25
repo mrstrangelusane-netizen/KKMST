@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaung Kaung Mobile Service Tracker - Modular</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Professional mobile service tracking application with modular architecture and virtual scrolling">
+    <meta name="theme-color" content="#10b981">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="KK Service Tracker">
+    <meta name="msapplication-TileColor" content="#10b981">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiByeD0iMjIiIGZpbGw9IiMxMGJ5ODEiLz4KPHN2ZyB4PSI0MiIgeT0iNDIiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMiAxNWwtNS01IDUuNzktNS43OSAxLjQxIDEuNDFMMTAuODMgMTJIMjB2MkgxMHoiLz4KPC9zdmc+Cjwvc3ZnPgo=">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzEwYjk4MSIvPgo8c3ZnIHg9IjgiIHk9IjgiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMiAxNWwtNS01IDUuNzktNS43OSAxLjQxIDEuNDFMMTAuODMgMTJIMjB2MkgxMHoiLz4KPC9zdmc+Cjwvc3ZnPgo=">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap');
+        body {
+            font-family: 'Padauk', sans-serif;
+        }
+        
+        /* Theme Variables */
+        :root {
+            --bg-primary: #1f2937;
+            --bg-secondary: #374151;
+            --bg-tertiary: #4b5563;
+            --text-primary: #ffffff;
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
+            --accent-primary: #10b981;
+            --accent-secondary: #059669;
+            --border-color: #6b7280;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --accent-primary: #0d9488;
+            --accent-secondary: #0f766e;
+            --border-color: #cbd5e1;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        
+        .theme-bg-primary { background-color: var(--bg-primary); }
+        .theme-bg-secondary { background-color: var(--bg-secondary); }
+        .theme-bg-tertiary { background-color: var(--bg-tertiary); }
+        .theme-text-primary { color: var(--text-primary); }
+        .theme-text-secondary { color: var(--text-secondary); }
+        .theme-text-muted { color: var(--text-muted); }
+        .theme-border { border-color: var(--border-color); }
+        .theme-shadow { box-shadow: var(--shadow); }
+        
+        .office-input {
+            @apply bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent;
+        }
+        
+        .virtual-scroll-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #374151;
+            border-radius: 0.5rem;
+        }
+        
+        .virtual-item {
+            border-bottom: 1px solid #374151;
+            transition: background-color 0.15s ease-in-out;
+        }
+        
+        .virtual-item:hover {
+            background-color: #374151;
+        }
+        
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body class="theme-bg-primary theme-text-primary min-h-screen">
+    <!-- Header -->
+    <header class="theme-bg-secondary border-b theme-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold theme-text-primary">Kaung Kaung Mobile Service</h1>
+                    <span class="hidden sm:inline-block text-sm theme-text-muted">Modular Architecture</span>
+                </div>
+                
+                <!-- User Info -->
+                <div id="userInfo" class="hidden flex items-center space-x-4">
+                    <div class="text-right">
+                        <div id="userName" class="font-semibold theme-text-primary"></div>
+                        <div id="userEmail" class="text-sm theme-text-muted"></div>
+                    </div>
+                    <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Login Section -->
+        <div id="loginSection" class="flex flex-col items-center justify-center min-h-96">
+            <div class="theme-bg-secondary p-8 rounded-lg theme-shadow max-w-md w-full">
+                <h2 class="text-2xl font-bold text-center mb-6 theme-text-primary">Sign In</h2>
+                <button id="googleSignInBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Sign in with Google
+                </button>
+            </div>
+        </div>
+
+        <!-- Application Content -->
+        <div id="appContent" class="hidden">
+            <!-- Message Display -->
+            <div id="messageBox" class="text-center mb-4"></div>
+
+            <!-- Controls Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Date and Technician Selection -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium theme-text-secondary mb-2">Date</label>
+                            <input id="datePicker" type="date" class="office-input w-full" value="">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium theme-text-secondary mb-2">Technician</label>
+                            <select id="technicianSelect" class="office-input w-full">
+                                <option value="">All Technicians</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col space-y-2">
+                    <button id="addVoucherBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                        + Add Voucher
+                    </button>
+                    <button id="toggleAnalyticsBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                        Show Analytics
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="mb-6">
+                <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
+                    <div class="flex items-center space-x-4">
+                        <label class="theme-text-secondary font-medium">Filter by Status:</label>
+                        <select id="takenStatusFilter" class="office-input p-2">
+                            <option value="all">All Vouchers</option>
+                            <option value="taken">✅ Taken by Customer</option>
+                            <option value="not-taken">⏳ Not Taken Yet</option>
+                        </select>
+                    </div>
+                    
+                    <input id="voucherSearchInput" type="text" placeholder="Voucher Number ဖြင့် ရှာရန် (Enter နှိပ်ပါ)" class="office-input p-2 w-full sm:w-1/2 md:w-1/3">
+                </div>
+            </div>
+
+            <!-- Vouchers Table with Virtual Scrolling -->
+            <div class="theme-bg-secondary rounded-lg theme-border border theme-shadow">
+                <div class="px-6 py-4 border-b theme-border">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold theme-text-primary">Vouchers</h3>
+                        <div class="text-lg font-bold text-green-400" id="dailyTotal">0 ¥</div>
+                    </div>
+                </div>
+                
+                <!-- Virtual Scrolling Container -->
+                <div id="virtualVoucherContainer" class="virtual-scroll-container">
+                    <!-- Virtual scrolling will be initialized here -->
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analyticsSection" class="hidden mt-8">
+                <div class="theme-bg-secondary rounded-lg theme-border border theme-shadow p-6">
+                    <h3 class="text-lg font-semibold theme-text-primary mb-6">Analytics Dashboard</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Revenue Chart -->
+                        <div class="bg-gray-800 p-4 rounded-lg">
+                            <h4 class="text-md font-semibold theme-text-primary mb-4">Monthly Revenue</h4>
+                            <canvas id="revenueChart" height="200"></canvas>
+                        </div>
+                        
+                        <!-- Technician Performance Chart -->
+                        <div class="bg-gray-800 p-4 rounded-lg">
+                            <h4 class="text-md font-semibold theme-text-primary mb-4">Technician Performance</h4>
+                            <canvas id="technicianChart" height="200"></canvas>
+                        </div>
+                        
+                        <!-- Daily Activity Chart -->
+                        <div class="bg-gray-800 p-4 rounded-lg lg:col-span-2">
+                            <h4 class="text-md font-semibold theme-text-primary mb-4">Daily Activity</h4>
+                            <canvas id="dailyChart" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Voucher Modal -->
+            <div id="addVoucherModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="theme-bg-secondary p-6 rounded-lg theme-shadow max-w-md w-full mx-4">
+                    <h3 class="text-lg font-semibold theme-text-primary mb-4">Add New Voucher</h3>
+                    
+                    <form id="addVoucherForm">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium theme-text-secondary mb-2">Customer Name</label>
+                                <input type="text" name="customerName" class="office-input w-full" required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium theme-text-secondary mb-2">Phone Model</label>
+                                <input type="text" name="phoneModel" class="office-input w-full" required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium theme-text-secondary mb-2">Phone Color</label>
+                                <input type="text" name="phoneColor" class="office-input w-full" required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium theme-text-secondary mb-2">Voucher Number</label>
+                                <input type="text" name="voucherNumber" class="office-input w-full" required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium theme-text-secondary mb-2">Amount (¥)</label>
+                                <input type="number" name="amount" class="office-input w-full" required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium theme-text-secondary mb-2">Date</label>
+                                <input type="date" name="date" class="office-input w-full" required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium theme-text-secondary mb-2">Technician</label>
+                                <select name="technicianName" class="office-input w-full" required>
+                                    <option value="">Select Technician</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input type="checkbox" name="takenByCustomer" id="takenByCustomer" class="mr-2">
+                                <label for="takenByCustomer" class="text-sm theme-text-secondary">Taken by Customer</label>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end space-x-2 mt-6">
+                            <button type="button" id="cancelVoucherBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                Add Voucher
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { AppController } from './js/AppController.js';
+        
+        // Initialize application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const app = new AppController();
+                await app.initialize();
+                
+                // Make app globally accessible for debugging
+                window.app = app;
+                
+                console.log('🚀 Application initialized successfully!');
+                console.log('📊 Status:', app.getStatus());
+                
+            } catch (error) {
+                console.error('❌ Failed to initialize application:', error);
+                document.getElementById('messageBox').textContent = 'Failed to initialize application. Please refresh the page.';
+                document.getElementById('messageBox').className = 'text-red-400 text-center mb-4';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -280,7 +280,7 @@
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="office-card p-4">
                         <h3 class="text-lg font-semibold theme-text-primary mb-4">Technician Performance</h3>
                         <div class="chart-container">
@@ -291,6 +291,12 @@
                         <h3 class="text-lg font-semibold theme-text-primary mb-4">Service Types</h3>
                         <div class="chart-container">
                             <canvas id="serviceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="office-card p-4">
+                        <h3 class="text-lg font-semibold theme-text-primary mb-4">Technician Performance Report</h3>
+                        <div class="chart-container">
+                            <canvas id="technicianRevenueChart"></canvas>
                         </div>
                     </div>
                     <div class="office-card p-4">
@@ -372,19 +378,101 @@
             </div>
 
             <!-- Add Voucher Form -->
-            <form id="addVoucherForm" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <input type="text" id="customerName" placeholder="Customer Name" class="office-input p-3" data-customer-autocomplete="true">
-                    <input type="text" id="phoneModel" placeholder="Phone Model" class="office-input p-3">
-                    <input type="text" id="phoneColor" placeholder="Phone Color" class="office-input p-3">
-                    <input type="text" id="error" placeholder="Error (ဥပမာ- display ပြောင်း)" class="office-input p-3">
-                    <input type="number" id="amount" placeholder="ပမာဏ (¥)" class="office-input p-3">
-                    <input type="text" id="voucherNumber" placeholder="Voucher Number" class="office-input p-3">
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold theme-text-primary">Add New Voucher</h3>
+                    <button id="customizeVoucherBtn" class="office-button">
+                        ⚙️ Customize Fields
+                    </button>
                 </div>
-                <button type="submit" class="w-full office-button py-3 px-6">
-                    voucher ထည့်သွင်းရန်
-                </button>
-            </form>
+                
+                <!-- Customize Fields Modal -->
+                <div id="customizeVoucherModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
+                        <h3 class="text-xl font-semibold theme-text-primary mb-4">Customize Voucher Fields</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <label class="theme-text-secondary">Customer Name:</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="customerNameRequired" checked class="text-purple-600">
+                                    <span class="theme-text-secondary text-sm">Required</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="theme-text-secondary">Phone Model:</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="phoneModelRequired" checked class="text-purple-600">
+                                    <span class="theme-text-secondary text-sm">Required</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="theme-text-secondary">Phone Color:</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="phoneColorRequired" class="text-purple-600">
+                                    <span class="theme-text-secondary text-sm">Required</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="theme-text-secondary">Error:</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="errorRequired" checked class="text-purple-600">
+                                    <span class="theme-text-secondary text-sm">Required</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="theme-text-secondary">Amount:</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="amountRequired" checked class="text-purple-600">
+                                    <span class="theme-text-secondary text-sm">Required</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="theme-text-secondary">Voucher Number:</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="voucherNumberRequired" checked class="text-purple-600">
+                                    <span class="theme-text-secondary text-sm">Required</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex space-x-3 mt-6">
+                            <button id="saveCustomizationBtn" class="office-button flex-1">Save</button>
+                            <button id="cancelCustomizationBtn" class="office-button flex-1">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <form id="addVoucherForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label for="customerName" class="block text-sm theme-text-secondary mb-1">Customer Name</label>
+                            <input type="text" id="customerName" placeholder="Customer Name" class="office-input p-3 w-full" data-customer-autocomplete="true">
+                        </div>
+                        <div>
+                            <label for="phoneModel" class="block text-sm theme-text-secondary mb-1">Phone Model</label>
+                            <input type="text" id="phoneModel" placeholder="Phone Model" class="office-input p-3 w-full">
+                        </div>
+                        <div>
+                            <label for="phoneColor" class="block text-sm theme-text-secondary mb-1">Phone Color <span class="text-gray-500">(Optional)</span></label>
+                            <input type="text" id="phoneColor" placeholder="Phone Color" class="office-input p-3 w-full">
+                        </div>
+                        <div>
+                            <label for="error" class="block text-sm theme-text-secondary mb-1">Error</label>
+                            <input type="text" id="error" placeholder="Error (ဥပမာ- display ပြောင်း)" class="office-input p-3 w-full">
+                        </div>
+                        <div>
+                            <label for="amount" class="block text-sm theme-text-secondary mb-1">Amount (¥)</label>
+                            <input type="number" id="amount" placeholder="ပမာဏ (¥)" class="office-input p-3 w-full">
+                        </div>
+                        <div>
+                            <label for="voucherNumber" class="block text-sm theme-text-secondary mb-1">Voucher Number</label>
+                            <input type="text" id="voucherNumber" placeholder="Voucher Number" class="office-input p-3 w-full">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full office-button py-3 px-6">
+                        voucher ထည့်သွင်းရန်
+                    </button>
+                </form>
+            </div>
 
             <!-- Vouchers Table -->
             <div class="flex items-center justify-end mb-2">
@@ -557,36 +645,44 @@
 
         <!-- Date Range Technician Totals Section -->
         <div class="office-card p-6 space-y-4">
-            <h2 class="text-2xl font-semibold text-center theme-text-primary">ရက်အပိုင်းအခြားအလိုက် စုစုပေါင်း</h2>
-            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <div class="flex flex-col items-center">
-                    <label for="startDatePicker" class="theme-text-secondary">စတင်ရက်စွဲ:</label>
-                    <input type="date" id="startDatePicker" class="office-input p-2 cursor-pointer">
-                </div>
-                <div class="flex flex-col items-center">
-                    <label for="endDatePicker" class="theme-text-secondary">ပြီးဆုံးရက်စွဲ:</label>
-                    <input type="date" id="endDatePicker" class="office-input p-2 cursor-pointer">
-                </div>
-                <!-- Technician Dropdown for Date Range -->
-                <div class="flex flex-col items-center">
-                    <label for="rangeTechnicianSelect" class="theme-text-secondary">Technician ရွေးချယ်ရန်:</label>
-                    <select id="rangeTechnicianSelect" class="office-input p-2">
-                        <option value="all" selected>Technician အားလုံး</option>
-                    </select>
-                </div>
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-semibold theme-text-primary">ရက်အပိုင်းအခြားအလိုက် စုစုပေါင်း</h2>
+                <button id="toggleDateRangeBtn" class="office-button">
+                    📅 ရက်အပိုင်းအခြား ကြည့်ရန်
+                </button>
             </div>
-            <button id="calculateRangeBtn" class="w-full office-button py-3 px-6">
-                စုစုပေါင်း တွက်ချက်ရန်
-            </button>
-            <div id="rangeTotalsDisplay" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Range totals for technicians will be displayed here -->
+            
+            <div id="dateRangeSection" class="hidden-section space-y-4">
+                <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <div class="flex flex-col items-center">
+                        <label for="startDatePicker" class="theme-text-secondary">စတင်ရက်စွဲ:</label>
+                        <input type="date" id="startDatePicker" class="office-input p-2 cursor-pointer">
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <label for="endDatePicker" class="theme-text-secondary">ပြီးဆုံးရက်စွဲ:</label>
+                        <input type="date" id="endDatePicker" class="office-input p-2 cursor-pointer">
+                    </div>
+                    <!-- Technician Dropdown for Date Range -->
+                    <div class="flex flex-col items-center">
+                        <label for="rangeTechnicianSelect" class="theme-text-secondary">Technician ရွေးချယ်ရန်:</label>
+                        <select id="rangeTechnicianSelect" class="office-input p-2">
+                            <option value="all" selected>Technician အားလုံး</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="calculateRangeBtn" class="w-full office-button py-3 px-6">
+                    စုစုပေါင်း တွက်ချက်ရန်
+                </button>
+                <div id="rangeTotalsDisplay" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <!-- Range totals for technicians will be displayed here -->
+                </div>
+                <button id="exportRangeBtn" class="w-full excel-button mt-4">
+                    Excel Export ထုတ်ရန်
+                </button>
+                <button id="exportByTechnicianBtn" class="w-full excel-button mt-4">
+                    Technician အလိုက် Excel (XLSX) Export
+                </button>
             </div>
-            <button id="exportRangeBtn" class="w-full excel-button mt-4">
-                Excel Export ထုတ်ရန်
-            </button>
-            <button id="exportByTechnicianBtn" class="w-full excel-button mt-4">
-                Technician အလိုက် Excel (XLSX) Export
-            </button>
         </div>
 
         <!-- Backup/Restore Section -->
@@ -727,6 +823,8 @@
         const analyticsSection = document.getElementById('analyticsSection');
         const toggleBackupBtn = document.getElementById('toggleBackupBtn');
         const backupSection = document.getElementById('backupSection');
+        const toggleDateRangeBtn = document.getElementById('toggleDateRangeBtn');
+        const dateRangeSection = document.getElementById('dateRangeSection');
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         
@@ -735,10 +833,17 @@
         const monthlyChart = document.getElementById('monthlyChart');
         const technicianChart = document.getElementById('technicianChart');
         const serviceChart = document.getElementById('serviceChart');
+        const technicianRevenueChart = document.getElementById('technicianRevenueChart');
         const todayRevenue = document.getElementById('todayRevenue');
         const weekRevenue = document.getElementById('weekRevenue');
         const monthRevenue = document.getElementById('monthRevenue');
         const totalRevenue = document.getElementById('totalRevenue');
+        
+        // Voucher customization elements
+        const customizeVoucherBtn = document.getElementById('customizeVoucherBtn');
+        const customizeVoucherModal = document.getElementById('customizeVoucherModal');
+        const saveCustomizationBtn = document.getElementById('saveCustomizationBtn');
+        const cancelCustomizationBtn = document.getElementById('cancelCustomizationBtn');
         
         // Backup elements
         const backupAllBtn = document.getElementById('backupAllBtn');
@@ -792,6 +897,9 @@
         let voucherSearchQuery = '';
         let searchResults = [];
         let isSearchMode = false;
+        let voucherCache = new Map(); // Cache for vouchers
+        let searchTimeout = null; // For debouncing
+        let lastSearchQuery = ''; // To avoid duplicate searches
         
         // Payroll system variables
         let payrollSettings = {
@@ -954,17 +1062,35 @@
         if (voucherSearchInput) {
             voucherSearchInput.addEventListener('input', (e) => {
                 voucherSearchQuery = e.target.value.trim();
+                
+                // Clear previous timeout
+                if (searchTimeout) {
+                    clearTimeout(searchTimeout);
+                }
+                
                 if (!voucherSearchQuery) {
                     // Clear search mode when input is empty
                     isSearchMode = false;
                     searchResults = [];
                     renderDailyVouchers();
+                    lastSearchQuery = '';
+                } else if (voucherSearchQuery.length >= 2) {
+                    // Only search if query is at least 2 characters
+                    searchTimeout = setTimeout(() => {
+                        if (voucherSearchQuery !== lastSearchQuery) {
+                            performVoucherSearch();
+                        }
+                    }, 300); // 300ms debounce delay
                 }
             });
 
             voucherSearchInput.addEventListener('keypress', async (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
+                    // Clear timeout to prevent duplicate search
+                    if (searchTimeout) {
+                        clearTimeout(searchTimeout);
+                    }
                     await performVoucherSearch();
                 }
             });
@@ -973,29 +1099,67 @@
 
         // Function to perform voucher search across all vouchers
         async function performVoucherSearch() {
-            if (!voucherSearchQuery || !currentUserId) {
+            if (!voucherSearchQuery || !currentUserId || voucherSearchQuery.length < 2) {
                 return;
             }
+
+            // Update last search query to prevent duplicates
+            lastSearchQuery = voucherSearchQuery;
 
             try {
                 showMessage("Voucher ရှာနေပါသည်...", false);
                 
-                const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
-                const querySnapshot = await getDocs(vouchersCollection);
+                let allVouchers = [];
                 
-                searchResults = [];
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const voucherNumber = (data.voucherNumber || '').toString().toLowerCase();
-                    const searchQuery = voucherSearchQuery.toLowerCase();
+                // Check if we have cached vouchers
+                if (voucherCache.has('allVouchers')) {
+                    const cachedData = voucherCache.get('allVouchers');
+                    const cacheAge = Date.now() - cachedData.timestamp;
                     
-                    if (voucherNumber.includes(searchQuery)) {
-                        searchResults.push({ id: doc.id, ...data });
+                    // Use cache if it's less than 5 minutes old
+                    if (cacheAge < 5 * 60 * 1000) {
+                        allVouchers = cachedData.vouchers;
+                        console.log('Using cached vouchers for search');
+                    }
+                }
+                
+                // If no valid cache, fetch from Firestore
+                if (allVouchers.length === 0) {
+                    const vouchersCollection = collection(db, `artifacts/${appId}/users/${currentUserId}/vouchers`);
+                    const querySnapshot = await getDocs(vouchersCollection);
+                    
+                    allVouchers = [];
+                    querySnapshot.forEach((doc) => {
+                        allVouchers.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    // Cache the results
+                    voucherCache.set('allVouchers', {
+                        vouchers: allVouchers,
+                        timestamp: Date.now()
+                    });
+                    console.log('Cached vouchers for future searches');
+                }
+                
+                // Perform client-side search
+                searchResults = [];
+                const searchQuery = voucherSearchQuery.toLowerCase();
+                
+                allVouchers.forEach((voucher) => {
+                    const voucherNumber = (voucher.voucherNumber || '').toString().toLowerCase();
+                    const customerName = (voucher.customerName || '').toString().toLowerCase();
+                    const phoneModel = (voucher.phoneModel || '').toString().toLowerCase();
+                    
+                    // Search in multiple fields for better results
+                    if (voucherNumber.includes(searchQuery) || 
+                        customerName.includes(searchQuery) || 
+                        phoneModel.includes(searchQuery)) {
+                        searchResults.push(voucher);
                     }
                 });
 
                 if (searchResults.length === 0) {
-                    showMessage(`Voucher Number "${voucherSearchQuery}" ကို မတွေ့ပါ`, true);
+                    showMessage(`"${voucherSearchQuery}" ကို မတွေ့ပါ`, true);
                     isSearchMode = false;
                 } else {
                     isSearchMode = true;
@@ -1006,6 +1170,12 @@
                 showMessage(`Error searching vouchers: ${error.message}`, true);
                 console.error("Error searching vouchers: ", error);
             }
+        }
+
+        // Function to clear voucher search cache
+        function clearVoucherCache() {
+            voucherCache.clear();
+            console.log('Voucher search cache cleared');
         }
 
         // Function to display search results
@@ -1543,6 +1713,10 @@
                 
                 vouchers.sort((a, b) => (a.timestamp && b.timestamp) ? a.timestamp.toDate() - b.timestamp.toDate() : 0);
                 dailyVouchersRaw = vouchers;
+                
+                // Invalidate search cache when vouchers change
+                voucherCache.delete('allVouchers');
+                
                 renderDailyVouchers();
             }, (error) => {
                 showMessage(`Error fetching daily data: ${error.message}`, true);
@@ -1842,6 +2016,9 @@
                     });
                     showMessage("Voucher ထည့်သွင်းပြီးပါပြီ။ (အော့ဖ်လိုင်းတွင် သိမ်းထားပါသည်)", false);
                 }
+                
+                // Clear search cache when new voucher is added
+                clearVoucherCache();
                 
                 // Clear form fields
                 customerNameInput.value = '';
@@ -2153,6 +2330,106 @@
             }
         });
 
+        // Voucher Customization functionality
+        customizeVoucherBtn.addEventListener('click', () => {
+            customizeVoucherModal.classList.remove('hidden');
+        });
+
+        cancelCustomizationBtn.addEventListener('click', () => {
+            customizeVoucherModal.classList.add('hidden');
+        });
+
+        saveCustomizationBtn.addEventListener('click', () => {
+            // Get the current state of checkboxes
+            const customerNameRequired = document.getElementById('customerNameRequired').checked;
+            const phoneModelRequired = document.getElementById('phoneModelRequired').checked;
+            const phoneColorRequired = document.getElementById('phoneColorRequired').checked;
+            const errorRequired = document.getElementById('errorRequired').checked;
+            const amountRequired = document.getElementById('amountRequired').checked;
+            const voucherNumberRequired = document.getElementById('voucherNumberRequired').checked;
+
+            // Update labels based on required status
+            updateFieldLabels({
+                customerName: customerNameRequired,
+                phoneModel: phoneModelRequired,
+                phoneColor: phoneColorRequired,
+                error: errorRequired,
+                amount: amountRequired,
+                voucherNumber: voucherNumberRequired
+            });
+
+            // Save to localStorage
+            localStorage.setItem('voucherFieldSettings', JSON.stringify({
+                customerName: customerNameRequired,
+                phoneModel: phoneModelRequired,
+                phoneColor: phoneColorRequired,
+                error: errorRequired,
+                amount: amountRequired,
+                voucherNumber: voucherNumberRequired
+            }));
+
+            customizeVoucherModal.classList.add('hidden');
+            showMessage("Voucher field settings saved successfully!", false);
+        });
+
+        // Load saved field settings on page load
+        function loadFieldSettings() {
+            const savedSettings = localStorage.getItem('voucherFieldSettings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                
+                // Update checkboxes
+                document.getElementById('customerNameRequired').checked = settings.customerName;
+                document.getElementById('phoneModelRequired').checked = settings.phoneModel;
+                document.getElementById('phoneColorRequired').checked = settings.phoneColor;
+                document.getElementById('errorRequired').checked = settings.error;
+                document.getElementById('amountRequired').checked = settings.amount;
+                document.getElementById('voucherNumberRequired').checked = settings.voucherNumber;
+
+                // Update labels
+                updateFieldLabels(settings);
+            }
+        }
+
+        function updateFieldLabels(settings) {
+            const fields = {
+                customerName: document.querySelector('label[for="customerName"]'),
+                phoneModel: document.querySelector('label[for="phoneModel"]'),
+                phoneColor: document.querySelector('label[for="phoneColor"]'),
+                error: document.querySelector('label[for="error"]'),
+                amount: document.querySelector('label[for="amount"]'),
+                voucherNumber: document.querySelector('label[for="voucherNumber"]')
+            };
+
+            Object.keys(fields).forEach(fieldName => {
+                if (fields[fieldName]) {
+                    const label = fields[fieldName];
+                    const span = label.querySelector('span');
+                    
+                    if (settings[fieldName]) {
+                        // Required field - remove any optional text
+                        if (span) {
+                            span.remove();
+                        }
+                    } else {
+                        // Optional field - add or update optional text
+                        if (span) {
+                            span.textContent = '(Optional)';
+                            span.className = 'text-gray-500';
+                        } else {
+                            const optionalSpan = document.createElement('span');
+                            optionalSpan.textContent = ' (Optional)';
+                            optionalSpan.className = 'text-gray-500';
+                            label.appendChild(optionalSpan);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load field settings when page loads
+        loadFieldSettings();
+
         // Backup Toggle
         toggleBackupBtn.addEventListener('click', () => {
             backupSection.classList.toggle('hidden-section');
@@ -2161,6 +2438,16 @@
                 loadBackupHistory();
             } else {
                 toggleBackupBtn.textContent = '💾 Backup/Restore';
+            }
+        });
+
+        // Date Range Toggle
+        toggleDateRangeBtn.addEventListener('click', () => {
+            dateRangeSection.classList.toggle('hidden-section');
+            if (!dateRangeSection.classList.contains('hidden-section')) {
+                toggleDateRangeBtn.textContent = '📅 ရက်အပိုင်းအခြား ပိတ်ရန်';
+            } else {
+                toggleDateRangeBtn.textContent = '📅 ရက်အပိုင်းအခြား ကြည့်ရန်';
             }
         });
 
@@ -2209,6 +2496,7 @@
                 createMonthlyChart(vouchers);
                 createTechnicianChart(vouchers);
                 createServiceChart(vouchers);
+                createTechnicianRevenueChart(vouchers);
                 
                 showMessage("Analytics ဒေတာ ပြီးပါပြီ။", false);
             } catch (error) {
@@ -2437,6 +2725,64 @@
                         legend: {
                             labels: {
                                 color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createTechnicianRevenueChart(vouchers) {
+            const ctx = technicianRevenueChart.getContext('2d');
+            if (charts.technicianRevenue) charts.technicianRevenue.destroy();
+
+            const technicianRevenueData = {};
+            vouchers.forEach(voucher => {
+                const tech = voucher.technicianName || 'Unknown';
+                technicianRevenueData[tech] = (technicianRevenueData[tech] || 0) + (Number(voucher.amount) || 0);
+            });
+
+            const labels = Object.keys(technicianRevenueData);
+            const data = Object.values(technicianRevenueData);
+
+            charts.technicianRevenue = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Revenue (¥)',
+                        data: data,
+                        backgroundColor: '#3b82f6',
+                        borderColor: '#1d4ed8',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
+                            },
+                            grid: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted')
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
+                            },
+                            grid: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted')
                             }
                         }
                     }
