@@ -443,7 +443,12 @@
                 
                 <form id="addVoucherForm" class="space-y-4">
                     <div class="flex justify-between items-center">
-                        <span id="autosaveStatus" class="text-sm text-gray-500">Auto-save: Every 1 hour</span>
+                        <div class="flex items-center space-x-2">
+                            <span id="autosaveStatus" class="text-sm text-gray-500">Auto-save: Off</span>
+                            <button type="button" id="toggleAutosaveBtn" class="text-xs px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+                                Enable
+                            </button>
+                        </div>
                         <div id="lastSavedTime" class="text-xs text-gray-500 hidden">
                             Last saved: <span id="savedTimeText"></span>
                         </div>
@@ -854,6 +859,7 @@
         
         // Autosave elements
         const autosaveStatus = document.getElementById('autosaveStatus');
+        const toggleAutosaveBtn = document.getElementById('toggleAutosaveBtn');
         const lastSavedTime = document.getElementById('lastSavedTime');
         const savedTimeText = document.getElementById('savedTimeText');
         
@@ -914,6 +920,7 @@
         let lastSearchQuery = ''; // To avoid duplicate searches
         
         // Autosave variables
+        let autosaveEnabled = false;
         let autosaveInterval = null;
         let autosaveIntervalTime = 60 * 60 * 1000; // 1 hour in milliseconds
         
@@ -2442,7 +2449,29 @@
         loadFieldSettings();
 
         // Simple Autosave Functions
+        function enableAutosave() {
+            autosaveEnabled = true;
+            autosaveStatus.textContent = 'Auto-save: On (Every 1 hour)';
+            autosaveStatus.className = 'text-sm text-green-500';
+            toggleAutosaveBtn.textContent = 'Disable';
+            toggleAutosaveBtn.className = 'text-xs px-2 py-1 bg-red-700 rounded hover:bg-red-600';
+            
+            startAutosave();
+        }
+
+        function disableAutosave() {
+            autosaveEnabled = false;
+            autosaveStatus.textContent = 'Auto-save: Off';
+            autosaveStatus.className = 'text-sm text-gray-500';
+            toggleAutosaveBtn.textContent = 'Enable';
+            toggleAutosaveBtn.className = 'text-xs px-2 py-1 bg-gray-700 rounded hover:bg-gray-600';
+            
+            stopAutosave();
+        }
+
         function startAutosave() {
+            if (!autosaveEnabled) return;
+            
             // Clear any existing interval
             if (autosaveInterval) {
                 clearInterval(autosaveInterval);
@@ -2465,6 +2494,8 @@
         }
 
         function saveFormData() {
+            if (!autosaveEnabled) return;
+            
             const formData = {
                 customerName: customerNameInput.value,
                 phoneModel: phoneModelInput.value,
@@ -2512,8 +2543,16 @@
             clearAutosavedData();
         }
 
-        // Start autosave on page load
-        startAutosave();
+        // Autosave toggle event listener
+        toggleAutosaveBtn.addEventListener('click', () => {
+            if (autosaveEnabled) {
+                disableAutosave();
+            } else {
+                enableAutosave();
+            }
+        });
+
+        // Start with autosave disabled by default
 
         // Backup Toggle
         toggleBackupBtn.addEventListener('click', () => {
