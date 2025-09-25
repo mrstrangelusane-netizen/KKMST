@@ -442,6 +442,13 @@
                 </div>
                 
                 <form id="addVoucherForm" class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span id="autosaveStatus" class="text-sm text-gray-500">Auto-save: Every 1 hour</span>
+                        <div id="lastSavedTime" class="text-xs text-gray-500 hidden">
+                            Last saved: <span id="savedTimeText"></span>
+                        </div>
+                    </div>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div>
                             <label for="customerName" class="block text-sm theme-text-secondary mb-1">Customer Name</label>
@@ -845,6 +852,11 @@
         const saveCustomizationBtn = document.getElementById('saveCustomizationBtn');
         const cancelCustomizationBtn = document.getElementById('cancelCustomizationBtn');
         
+        // Autosave elements
+        const autosaveStatus = document.getElementById('autosaveStatus');
+        const lastSavedTime = document.getElementById('lastSavedTime');
+        const savedTimeText = document.getElementById('savedTimeText');
+        
         // Backup elements
         const backupAllBtn = document.getElementById('backupAllBtn');
         const backupVouchersBtn = document.getElementById('backupVouchersBtn');
@@ -900,6 +912,10 @@
         let voucherCache = new Map(); // Cache for vouchers
         let searchTimeout = null; // For debouncing
         let lastSearchQuery = ''; // To avoid duplicate searches
+        
+        // Autosave variables
+        let autosaveInterval = null;
+        let autosaveIntervalTime = 60 * 60 * 1000; // 1 hour in milliseconds
         
         // Payroll system variables
         let payrollSettings = {
@@ -2020,13 +2036,8 @@
                 // Clear search cache when new voucher is added
                 clearVoucherCache();
                 
-                // Clear form fields
-                customerNameInput.value = '';
-                phoneModelInput.value = '';
-                phoneColorInput.value = '';
-                errorInput.value = '';
-                voucherNumberInput.value = '';
-                amountInput.value = '';
+                // Clear form and autosaved data
+                clearFormAndAutosave();
             } catch (error) {
                 showMessage(`Error adding voucher: ${error.message}`, true);
                 console.error("Error adding document: ", error);
@@ -2429,6 +2440,80 @@
 
         // Load field settings when page loads
         loadFieldSettings();
+
+        // Simple Autosave Functions
+        function startAutosave() {
+            // Clear any existing interval
+            if (autosaveInterval) {
+                clearInterval(autosaveInterval);
+            }
+            
+            // Start hourly autosave
+            autosaveInterval = setInterval(() => {
+                saveFormData();
+            }, autosaveIntervalTime);
+            
+            console.log('Autosave started - saving every hour');
+        }
+
+        function stopAutosave() {
+            if (autosaveInterval) {
+                clearInterval(autosaveInterval);
+                autosaveInterval = null;
+                console.log('Autosave stopped');
+            }
+        }
+
+        function saveFormData() {
+            const formData = {
+                customerName: customerNameInput.value,
+                phoneModel: phoneModelInput.value,
+                phoneColor: phoneColorInput.value,
+                error: errorInput.value,
+                amount: amountInput.value,
+                voucherNumber: voucherNumberInput.value,
+                timestamp: Date.now()
+            };
+            
+            // Only save if there's actual data
+            const hasData = Object.values(formData).some(value => 
+                value && value.toString().trim() !== '' && value !== formData.timestamp
+            );
+            
+            if (hasData) {
+                localStorage.setItem('voucherFormAutosave', JSON.stringify(formData));
+                
+                // Update last saved time
+                const now = new Date();
+                savedTimeText.textContent = now.toLocaleTimeString();
+                lastSavedTime.classList.remove('hidden');
+                
+                console.log('Form data autosaved at', now.toLocaleTimeString());
+            }
+        }
+
+        // No need for loadAutosavedData since Firebase handles real-time sync
+
+        function clearAutosavedData() {
+            localStorage.removeItem('voucherFormAutosave');
+            lastSavedTime.classList.add('hidden');
+        }
+
+        function clearFormAndAutosave() {
+            // Clear form fields
+            customerNameInput.value = '';
+            phoneModelInput.value = '';
+            phoneColorInput.value = '';
+            errorInput.value = '';
+            voucherNumberInput.value = '';
+            amountInput.value = '';
+            
+            // Clear autosaved data
+            clearAutosavedData();
+        }
+
+        // Start autosave on page load
+        startAutosave();
 
         // Backup Toggle
         toggleBackupBtn.addEventListener('click', () => {
